@@ -6,7 +6,7 @@ import { EntryList, NewEntry } from "../components/ui";
 export default function HomePage() {
 
   return (
-    <Layout title="Home - Open Jira">
+    <Layout title="Task List App">
       
       <Grid container spacing={ 2 }>
 

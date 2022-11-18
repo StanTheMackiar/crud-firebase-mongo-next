@@ -1,3 +1,4 @@
+import { useSnackbar } from 'notistack';
 import { FC, PropsWithChildren, useEffect, useReducer } from 'react'
 import { entriesApi } from '../../apis';
 import { Entry } from '../../interfaces';
@@ -17,6 +18,7 @@ const Entries_INITIAL_STATE: EntriesState = {
 export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
    const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE)
+   const { enqueueSnackbar } = useSnackbar()
 
 
    const addNewEntry = async( description: string ) => {
@@ -32,18 +34,56 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
         dispatch({ type: 'Entry - Add', payload: data })
 
+        enqueueSnackbar('Entry added', {
+          variant: 'success',
+          autoHideDuration: 1500,
+          anchorOrigin: {
+               vertical: 'top',
+               horizontal: 'right'
+          }
+        })
+
    }
 
-   const updateEntry = async( { _id, description, status }: Entry ) => {
+   const updateEntry = async( { _id, description, status }: Entry, showSnackbar: boolean = false ) => {
         try {
              const { data } = await entriesApi.put<Entry>(`/entries/${ _id }`, { description, status });
-             dispatch({type: 'Entry - Update', payload: data });
+             dispatch({type: 'Entry - Update-Entry', payload: data });
+
+
+             if ( showSnackbar ) {
+                  enqueueSnackbar('Entry updated', {
+                    variant: 'success',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                         vertical: 'top',
+                         horizontal: 'right'
+                    }
+                  })
+             }
           
         } catch (error) {
             console.log({ error })
         }
+   }
 
+   const deleteEntry = async({ _id }: Entry) => {
+          try {
+               const { data } = await entriesApi.delete<Entry>(`/entries/${ _id }`);
+               dispatch({ type: 'Entry - Delete-Entry', payload: data })
 
+               enqueueSnackbar('Entry deleted', {
+                    variant: 'info',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                         vertical: 'top',
+                         horizontal: 'right'
+                    }
+               })
+
+          } catch (error) {
+               console.log(error)
+          }
    }
 
 
@@ -62,6 +102,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
          ...state,
 
          addNewEntry,
+         deleteEntry,
          updateEntry,
        }}>
           { children }

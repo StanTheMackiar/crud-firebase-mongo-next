@@ -58,6 +58,7 @@ export const NewEntry = () => {
               size="small"
               endIcon={<SaveIcon />}
               onClick={onSave}
+              disabled={inputValue.length <= 0}
             >
               Save
             </Button>

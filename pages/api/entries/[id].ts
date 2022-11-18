@@ -20,26 +20,51 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
         case 'PUT':
                 return updateEntry( req, res );
         case 'GET':
-                return getEntry( id as string, res )
+                return getEntry( req, res )
+        case 'DELETE':
+                return deleteEntry( req, res )
+        
 
         default:
-            return res.status(400).json( { message: 'El metodo no existe' + req.method } )
+            return res.status(400).json( { message: 'El metodo no existe ' + req.method } )
 
     }
 }
 
-const getEntry = async( id: string, res: NextApiResponse<Data>) => {
+const getEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
+
+    const { id } = req.query
+
     await db.connect();
     const entryInDB = await Entry.findById( id );
     await db.disconnect();
 
     if ( !entryInDB) {
-        return res.status(400).json({ message: 'El id no esta en la base de datos: ' + id })
+        return res.status(400).json({ message: 'The ID is not exist in the data base: ' + id })
     }
 
     return res.status(200).json(entryInDB)
 
 }
+
+const deleteEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
+
+    const { id } = req.query
+
+    await db.connect();
+    const entryInDB = await Entry.findById( id );
+    await db.disconnect();
+
+    if ( !entryInDB) {
+        return res.status(400).json({ message: 'The ID is not exist in the data base: ' + id })
+    }
+
+    await Entry.findByIdAndDelete( id );
+
+    return res.status(200).json(entryInDB)
+
+}
+
 
 
 const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => {

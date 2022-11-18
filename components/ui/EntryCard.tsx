@@ -1,9 +1,16 @@
-import { FC, DragEvent, useContext } from 'react';
+import { FC, DragEvent, useContext, useState } from 'react';
 
-import { Card, CardActionArea, CardActions, CardContent, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardActions, CardContent, IconButton, Typography } from '@mui/material';
 
 import { Entry } from '../../interfaces';
 import { UIContext } from '../../context/ui';
+import { useRouter } from 'next/router';
+import { dateFunctions } from '../../utils/';
+
+import EditIcon from '@mui/icons-material/BorderColor';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { EntriesContext } from '../../context/entries/EntriesContext';
+import { AlertDialog } from './AlertDialog';
 
 interface Props {
     entry: Entry,
@@ -13,6 +20,15 @@ interface Props {
 export const EntryCard:FC<Props> = ({ entry }) => {
 
     const { toggleDragging } = useContext(UIContext)
+    const { deleteEntry } = useContext(EntriesContext)
+
+    const [open, setOpen] = useState(false);
+
+    const router = useRouter();
+
+    const toggleOpen = () => {
+        setOpen(prev => !prev);
+      };
 
     const onDragStart = ( e: DragEvent ) => {
         e.dataTransfer?.setData('text', entry._id)
@@ -23,25 +39,54 @@ export const EntryCard:FC<Props> = ({ entry }) => {
         toggleDragging( false )
     }
 
+    const onEditEntry = () => {
+        router.push(`/entries/${ entry._id }`)
+    }
+
+    const onDeleteEntry = () => {
+        deleteEntry(entry)
+    }
 
   return (
-    <Card
-        sx={{ marginBottom: 1 }}
-        elevation={1}
-        draggable
-        onDragStart={ onDragStart }
-        onDragEnd={ onDragEnd }
-    >  
-        <CardActionArea>
-            <CardContent>
-                <Typography sx={{ whiteSpace: 'pre-line' }}>{entry.description}</Typography>
-            </CardContent>
+    <>
+        <Card
+            sx={{ marginBottom: 1 }}
+            elevation={1}
+            draggable
+            onDragStart={ onDragStart }
+            onDragEnd={ onDragEnd }
+        >  
+            <CardActionArea>
+                <CardContent>
+                    <Typography sx={{ whiteSpace: 'pre-line' }}>{entry.description}</Typography>
+                </CardContent>
 
-            <CardActions sx={{ display: 'flex', justifyContent: 'end', paddingRight: 2}}>
-                <Typography variant='body2'>hace 30 minutos</Typography>
-            </CardActions>
-        </CardActionArea>
+                <CardActions sx={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 2}}>
+                    <Typography variant='body2' color='gray'>{dateFunctions.getFormatDistanceToNow( entry.createdAt )}</Typography>
+                    <Box component='div'>
+                        <IconButton 
+                            size='small' 
+                            onClick={ onEditEntry }
+                        >
+                            <EditIcon />
+                        </IconButton>
+                        <IconButton 
+                            size='small'
+                            onClick={ toggleOpen }
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                </CardActions>
+            </CardActionArea>
 
-    </Card>
+        </Card>
+
+        <AlertDialog 
+            open={open} 
+            toggleOpen={toggleOpen} 
+            onDeleteEntry={onDeleteEntry}
+        />
+    </>
   )
 }
