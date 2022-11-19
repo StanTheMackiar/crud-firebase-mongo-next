@@ -10,7 +10,8 @@ import { dateFunctions } from '../../utils/';
 import EditIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EntriesContext } from '../../context/entries/EntriesContext';
-import { AlertDialog } from './AlertDialog';
+import { AlertDialog } from '.';
+
 
 interface Props {
     entry: Entry,
@@ -65,12 +66,14 @@ export const EntryCard:FC<Props> = ({ entry }) => {
                     <Typography variant='body2' color='gray'>{dateFunctions.getFormatDistanceToNow( entry.createdAt )}</Typography>
                     <Box component='div'>
                         <IconButton 
+                            aria-label='edit'
                             size='small' 
                             onClick={ onEditEntry }
                         >
                             <EditIcon />
                         </IconButton>
                         <IconButton 
+                            aria-label='delete'
                             size='small'
                             onClick={ toggleOpen }
                         >

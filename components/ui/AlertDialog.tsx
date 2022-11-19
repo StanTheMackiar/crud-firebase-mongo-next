@@ -4,6 +4,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogContentText, Dialog
 import InfoIcon from '@mui/icons-material/Info';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+
 interface Props {
   toggleOpen: () => void,
   open: boolean,
@@ -11,7 +12,7 @@ interface Props {
 }
 
 export const AlertDialog = ({ toggleOpen, open, onDeleteEntry }: Props) => {
-    
+
   return (
     <div>
       <Dialog
@@ -32,7 +33,7 @@ export const AlertDialog = ({ toggleOpen, open, onDeleteEntry }: Props) => {
         </Grid>
         <DialogContent>
           <DialogContentText textAlign='center'>
-            You won't be able to revert this action!
+            {`You won't be able to revert this action!`}
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{p:2}}>
