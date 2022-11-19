@@ -1,4 +1,4 @@
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 
 /**
  * 0 = disconnected
@@ -10,6 +10,8 @@ import mongoose, { mongo } from 'mongoose';
 const mongoConnection = {
     isConnected: 0
 }
+
+const controller = new AbortController();
 
 
 export const connect = async() => {
@@ -31,7 +33,7 @@ export const connect = async() => {
 
     }
 
-    await mongoose.connect(process.env.MONGO_URL || 'mongodb+srv://Stan:1192914823@cluster0.98g9d5i.mongodb.net/test')
+    await mongoose.connect(process.env.MONGO_URL || '')
     mongoConnection.isConnected = 1;
     console.log('Connected to MongoDB:', process.env.MONGO_URL)
 

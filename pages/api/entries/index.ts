@@ -7,6 +7,7 @@ type Data =
     | IEntry[]
     | IEntry
 
+
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
 
     switch (req.method) {
@@ -28,11 +29,19 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 const getEntries = async( res: NextApiResponse<Data>) => {
 
-    await db.connect();
-    const entries = await Entry.find().sort({ createdAt: 'ascending'})
-    await db.disconnect();
+    try {
+        await db.connect();
+        const entries = await Entry.find().sort({ createdAt: 'ascending'})
+        await db.disconnect();
 
-    return res.status(200).json( entries )
+        return res.status(200).json( entries )
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json( {message: 'The data base is not connected'} )
+    }
+
+    
 }
 
 const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
@@ -56,9 +65,6 @@ const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
         await db.disconnect();
         console.log(error)
 
-        return res.status(500).json({ message: 'Algo salio mal, revisar consola del servidor'})
+        return res.status(500).json({ message: 'The data base is not connected'})
     }
-
-
-    return res.status(201).json({ message: 'POST' })
 }
