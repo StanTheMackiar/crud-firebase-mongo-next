@@ -31,7 +31,7 @@ export const connect = async() => {
 
     }
 
-    await mongoose.connect(process.env.MONGO_URL || '')
+    await mongoose.connect(process.env.MONGO_URL || 'mongodb+srv://Stan:1192914823@cluster0.98g9d5i.mongodb.net/test')
     mongoConnection.isConnected = 1;
     console.log('Connected to MongoDB:', process.env.MONGO_URL)
 
