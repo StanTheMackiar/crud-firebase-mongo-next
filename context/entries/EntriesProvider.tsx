@@ -1,5 +1,5 @@
 import { useSnackbar } from 'notistack';
-import { FC, PropsWithChildren, useEffect, useReducer } from 'react'
+import { FC, PropsWithChildren, useEffect, useReducer, useState } from 'react'
 import { entriesApi } from '../../apis';
 import { Entry } from '../../interfaces';
 
@@ -19,7 +19,8 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
    const [state, dispatch] = useReducer(entriesReducer, Entries_INITIAL_STATE)
    const { enqueueSnackbar } = useSnackbar()
-
+   const [loader, setLoader] = useState(false);
+   const [error, setError] = useState(false)
 
    const addNewEntry = async( description: string ) => {
 
@@ -88,8 +89,17 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
    const refreshEntries = async() => {
+     try {
+        setLoader(true)  
         const { data } = await entriesApi.get<Entry[]>('/entries');
         dispatch( { type: "Entry - Refresh-Data", payload: data })
+        setLoader(false)
+     } catch (error) {
+          console.log(error)
+          setLoader(false)
+          setError(true)
+     }
+        
 
    }
 
@@ -100,7 +110,8 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
    return (
        <EntriesContext.Provider value={{
          ...state,
-
+         error,
+         loader,
          addNewEntry,
          deleteEntry,
          updateEntry,
