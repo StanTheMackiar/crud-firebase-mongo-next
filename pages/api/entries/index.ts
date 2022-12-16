@@ -1,11 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { db } from '../../../database'
-import { Entry, IEntry } from '../../../models'
+import { db } from '../../../firebase/firebase';
+import { collection, getDocs, query, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc, where } from "firebase/firestore";
+import { Entry } from '../../../interfaces';
+
 
 type Data = 
     | { message: string }
-    | IEntry[]
-    | IEntry
+    | Entry[]
+    | Entry
 
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -29,42 +31,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 
 const getEntries = async( res: NextApiResponse<Data>) => {
 
-    try {
-        await db.connect();
-        const entries = await Entry.find().sort({ createdAt: 'ascending'})
-        await db.disconnect();
-
-        return res.status(200).json( entries )
-
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json( {message: 'The data base is not connected'} )
-    }
-
-    
 }
 
 const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
 
-    const { description = '' } = req.body;
 
-    const newEntry = new Entry({
-        description,
-        createdAt: Date.now(),
-    });
 
-    try {
-
-        await db.connect();
-        await newEntry.save();
-        await db.disconnect();
-
-        return res.status(201).json( newEntry );
-
-    } catch (error) {
-        await db.disconnect();
-        console.log(error)
-
-        return res.status(500).json({ message: 'The data base is not connected'})
-    }
 }

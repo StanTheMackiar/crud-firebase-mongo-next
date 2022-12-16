@@ -20,6 +20,7 @@
     "date-fns": "^2.29.3",
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.3",
+    "firebase": "^9.15.0",
     "mongoose": "^6.7.2",
     "next": "13.0.3",
     "notistack": "^2.0.8",
