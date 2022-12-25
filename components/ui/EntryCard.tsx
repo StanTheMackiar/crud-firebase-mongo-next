@@ -32,7 +32,7 @@ export const EntryCard:FC<Props> = ({ entry }) => {
       };
 
     const onDragStart = ( e: DragEvent ) => {
-        e.dataTransfer?.setData('text', entry._id)
+        e.dataTransfer?.setData('text', entry._id!)
         toggleDragging( true )
     }
 
@@ -46,6 +46,7 @@ export const EntryCard:FC<Props> = ({ entry }) => {
 
     const onDeleteEntry = () => {
         deleteEntry(entry)
+        toggleOpen();
     }
 
   return (

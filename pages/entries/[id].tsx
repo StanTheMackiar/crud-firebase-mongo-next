@@ -8,10 +8,11 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { EntryStatus, Entry } from '../../interfaces';
-import { dbEntries } from '../../database';
 import { EntriesContext } from '../../context/entries/EntriesContext';
 import { dateFunctions } from '../../utils';
 import { useRouter } from 'next/router';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase/firebase';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished']
 
@@ -61,7 +62,7 @@ export const EntryPage: FC<Props> = ({ entry }) => {
             <Grid item xs={12} sm={8} md={6}>
                 <Card>
                     <CardHeader 
-                        title={`Entry`}
+                        title={`Edit entry`}
                         subheader={`Created ${ dateFunctions.getFormatDistanceToNow(entry.createdAt)}`}
                     />
                     <CardContent>
@@ -134,28 +135,29 @@ export const EntryPage: FC<Props> = ({ entry }) => {
 };
 
 
-// You should use getServerSideProps when:
-// - Only if you need to pre-render a page whose data must be fetched at request time
-
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
     const { id } = params as {id: string};
 
-    const entry = await dbEntries.getEntryById( id );
+    const docRef = doc(db, 'Entries', `${id}`)
+    const entryRef = await getDoc(docRef)
 
-    if ( !entry) {
+    if ( !entryRef.exists() ) {
         return {
             redirect: {
                 destination: '/',
                 permanent: false,
             }
         }
-    };
+    }
 
     return {
         props: {
-            entry
+            entry: {
+                ...entryRef.data(),
+                _id: entryRef.id
+            }
         }
     }
 }

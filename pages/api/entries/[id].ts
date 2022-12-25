@@ -1,11 +1,12 @@
+import { EntryRes } from './../../../interfaces/entry';
 import type { NextApiRequest, NextApiResponse } from 'next'
-import mongoose from 'mongoose';
-import { db } from '../../../database';
-import { Entry, IEntry } from '../../../models';
+import { db } from '../../../firebase/firebase';
+import { doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { Entry } from '../../../interfaces';
 
 type Data = 
   |  { message: string }
-  |  IEntry
+  |  Entry
 
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -17,8 +18,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
                 return getEntry( req, res )
         case 'DELETE':
                 return deleteEntry( req, res )
-        
-
         default:
             return res.status(400).json( { message: 'El metodo no existe ' + req.method } )
 
@@ -29,15 +28,17 @@ const getEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     const { id } = req.query
 
-    await db.connect();
-    const entryInDB = await Entry.findById( id );
-    await db.disconnect();
+    const docRef = doc(db, 'Entries', `${id}`)
+    const entry = await getDoc(docRef)
 
-    if ( !entryInDB) {
+    if ( !entry.exists() ) {
         return res.status(400).json({ message: 'The ID is not exist in the data base: ' + id })
     }
 
-    return res.status(200).json(entryInDB)
+    return res.status(200).send({
+        ...entry.data(), 
+        _id: entry.id 
+    } as any)
 
 }
 
@@ -45,17 +46,19 @@ const deleteEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     const { id } = req.query
 
-    await db.connect();
-    const entryInDB = await Entry.findById( id );
-    await db.disconnect();
+    const docRef = doc(db, "Entries", `${id}`);
+    const entryToDelete = await getDoc(docRef);
 
-    if ( !entryInDB) {
+    if ( !entryToDelete.exists() ) {
         return res.status(400).json({ message: 'The ID is not exist in the data base: ' + id })
     }
 
-    await Entry.findByIdAndDelete( id );
+    await deleteDoc(docRef)
 
-    return res.status(200).json(entryInDB)
+    return res.status(200).send({
+        ...entryToDelete.data(), 
+        _id: entryToDelete.id 
+    } as any)
 
 }
 
@@ -65,13 +68,14 @@ const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => 
 
     const { id } = req.query;
 
-    await db.connect();
-    const entryToUpdate = await Entry.findById( id );
-
-    if ( !entryToUpdate ) {
-        await db.disconnect();
+    const entryRef = doc(db, 'Entries', `${id}`)
+    const entry = await getDoc(entryRef)
+    
+    if ( !entry.exists() ) {
         return res.status(400).json({ message: 'No hay entrada con ese ID: ' + id })
-    }
+    } 
+    
+    const entryToUpdate = entry.data();
 
     const {
         description = entryToUpdate.description, 
@@ -79,13 +83,19 @@ const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => 
     } = req.body;
 
     try {
-        const updatedEntry = await Entry.findByIdAndUpdate( id, { description, status }, { runValidators: true, new: true });
-        await db.disconnect();
-        return res.status(200).json( updatedEntry! );
+        await updateDoc(entryRef, {
+            description,
+            status
+        })
+        const entryUpdated = await getDoc(entryRef)
+
+        return res.status(200).json( {
+            ...entryUpdated.data(),
+            _id: entryUpdated.id,
+        } as any);
 
     } catch (error: any) {
         console.log(error);
-        await db.disconnect();
         res.status(400).json({ message: error.errors.status.message});
     }
 

@@ -1,6 +1,6 @@
 import { useSnackbar } from 'notistack';
 import { FC, PropsWithChildren, useEffect, useReducer, useState } from 'react'
-import { entriesApi } from '../../apis';
+import { entriesApi } from '../../api';
 import { Entry } from '../../interfaces';
 
 import { EntriesContext,  entriesReducer } from './';
@@ -24,33 +24,41 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
    const addNewEntry = async( description: string ) => {
 
-        // const newEntry: Entry = {
-        //     _id: uuidv4(),
-        //     description,
-        //     createdAt: Date.now(),
-        //     status: 'pending'
-        // }
+        try {
+             const { data } = await entriesApi.post<Entry>('/entries', { description })
 
-        const { data } = await entriesApi.post<Entry>('/entries', { description })
+             dispatch({ type: 'Entry - Add', payload: data })
 
-        dispatch({ type: 'Entry - Add', payload: data })
+             enqueueSnackbar('Entry added', {
+               variant: 'success',
+               autoHideDuration: 1500,
+               anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right'
+               }
+             })
+        } catch (error) {
+               console.log(error)
+               enqueueSnackbar('Server error', {
+                    variant: 'error',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                         vertical: 'top',
+                         horizontal: 'right'
+                    }
+               })
+        }  
 
-        enqueueSnackbar('Entry added', {
-          variant: 'success',
-          autoHideDuration: 1500,
-          anchorOrigin: {
-               vertical: 'top',
-               horizontal: 'right'
-          }
-        })
+
+       
 
    }
 
    const updateEntry = async( { _id, description, status }: Entry, showSnackbar: boolean = false ) => {
         try {
+          
              const { data } = await entriesApi.put<Entry>(`/entries/${ _id }`, { description, status });
              dispatch({type: 'Entry - Update-Entry', payload: data });
-
 
              if ( showSnackbar ) {
                   enqueueSnackbar('Entry updated', {
@@ -65,6 +73,14 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
           
         } catch (error) {
             console.log({ error })
+            enqueueSnackbar('Server error', {
+               variant: 'error',
+               autoHideDuration: 1500,
+               anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right'
+               }
+          })
         }
    }
 
@@ -84,18 +100,27 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
           } catch (error) {
                console.log(error)
+
+               enqueueSnackbar('Server error', {
+                    variant: 'error',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                         vertical: 'top',
+                         horizontal: 'right'
+                    }
+               })
           }
    }
 
 
    const refreshEntries = async() => {
      try {
-        setLoader(true)  
+        setLoader(true)
         const { data } = await entriesApi.get<Entry[]>('/entries');
-        dispatch( { type: "Entry - Refresh-Data", payload: data })
+        dispatch({ type: "Entry - Refresh-Data", payload: data })
         setLoader(false)
      } catch (error) {
-          console.log(error)
+          console.log({error})
           setLoader(false)
           setError(true)
      }
