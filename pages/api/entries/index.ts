@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../firebase/firebase';
-import { collection, getDocs, query, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, addDoc, QuerySnapshot, CollectionReference } from "firebase/firestore";
 import { Entry } from '../../../interfaces';
 
 type Data = 
@@ -34,16 +34,17 @@ const getEntries = async( req: NextApiRequest , res: NextApiResponse<Data>) => {
     }), 5000)
     
     try {
-    const querySnapshot = await getDocs(query(collection(db, 'Entries')));
-    
-    clearTimeout(abort)
-    const entries = [] as Entry[];
+    const querySnapshot = await getDocs(query(collection(db, 'Entries'))) as QuerySnapshot<Entry>;
 
-    querySnapshot.forEach((doc) => 
+    clearTimeout(abort)
+    
+    const entries: Entry[] = [];
+
+    querySnapshot.forEach( doc => 
         entries.push({
             ...doc.data(),
             _id: doc.id,
-        } as any)
+        })
       );
 
     return res.status(200).json(entries)
@@ -64,7 +65,7 @@ const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
     }
 
     
-    const entryRef = collection(db, 'Entries');
+    const entryRef = collection(db, 'Entries') as CollectionReference<Entry>;
     const entryAdded = await addDoc(entryRef, entry)
 
     //! Agregar entry con id personalizado
@@ -73,6 +74,6 @@ const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(200).send({
         ...entry,
         _id: entryAdded.id
-    } as any)
+    })
 
 }

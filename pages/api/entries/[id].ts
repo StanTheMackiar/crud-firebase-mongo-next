@@ -1,7 +1,6 @@
-import { EntryRes } from './../../../interfaces/entry';
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '../../../firebase/firebase';
-import { doc, getDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc, updateDoc, DocumentReference } from "firebase/firestore";
 import { Entry } from '../../../interfaces';
 
 type Data = 
@@ -28,8 +27,8 @@ const getEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     const { id } = req.query
 
-    const docRef = doc(db, 'Entries', `${id}`)
-    const entry = await getDoc(docRef)
+    const docRef = doc(db, 'Entries', `${id}`) as DocumentReference<Entry>;
+    const entry = await getDoc<Entry>(docRef)
 
     if ( !entry.exists() ) {
         return res.status(400).json({ message: 'The ID is not exist in the data base: ' + id })
@@ -38,7 +37,7 @@ const getEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(200).send({
         ...entry.data(), 
         _id: entry.id 
-    } as any)
+    })
 
 }
 
@@ -46,8 +45,8 @@ const deleteEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     const { id } = req.query
 
-    const docRef = doc(db, "Entries", `${id}`);
-    const entryToDelete = await getDoc(docRef);
+    const docRef = doc(db, "Entries", `${id}`) as DocumentReference<Entry>;
+    const entryToDelete = await getDoc<Entry>(docRef);
 
     if ( !entryToDelete.exists() ) {
         return res.status(400).json({ message: 'The ID is not exist in the data base: ' + id })
@@ -58,7 +57,7 @@ const deleteEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
     return res.status(200).send({
         ...entryToDelete.data(), 
         _id: entryToDelete.id 
-    } as any)
+    })
 
 }
 
@@ -68,8 +67,8 @@ const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => 
 
     const { id } = req.query;
 
-    const entryRef = doc(db, 'Entries', `${id}`)
-    const entry = await getDoc(entryRef)
+    const entryRef = doc(db, 'Entries', `${id}`) as DocumentReference<Entry>
+    const entry = await getDoc<Entry>(entryRef)
     
     if ( !entry.exists() ) {
         return res.status(400).json({ message: 'No hay entrada con ese ID: ' + id })
@@ -80,27 +79,23 @@ const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => 
     const {
         description = entryToUpdate.description, 
         status = entryToUpdate.status,
-    } = req.body;
+    } = req.body as Entry;
 
     try {
         await updateDoc(entryRef, {
             description,
             status
         })
-        const entryUpdated = await getDoc(entryRef)
 
-        return res.status(200).json( {
-            ...entryUpdated.data(),
+        const entryUpdated = await getDoc<Entry>(entryRef)
+
+        return res.status(200).json({
+            ...entryUpdated.data()!,
             _id: entryUpdated.id,
-        } as any);
+        });
 
-    } catch (error: any) {
-        console.log(error);
-        res.status(400).json({ message: error.errors.status.message});
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Error en el servidor'});
     }
-
-    //  OTRA MANERA DE HACERLO
-    // entryToUpdate.description = description;
-    // entryToUpdate.status = status;
-    // await entryToUpdate.save();
 }

@@ -8,11 +8,6 @@ export interface Entry {
     status: EntryStatus,
 }
 
-export interface EntryRes {
-    description: string,
-    createdAt: number,
-    status: EntryStatus,
-}
 
 
 
