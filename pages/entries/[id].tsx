@@ -1,4 +1,4 @@
-import { ChangeEvent, useState, useMemo, FC, useContext } from 'react';
+import { FC } from 'react';
 import { GetServerSideProps } from 'next'
 
 import { capitalize, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton } from '@mui/material'
@@ -8,11 +8,10 @@ import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { EntryStatus, Entry } from '../../interfaces';
-import { EntriesContext } from '../../context/entries/EntriesContext';
 import { dateFunctions } from '../../utils';
-import { useRouter } from 'next/router';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
+import { useEntries } from '../../hooks/useEntries';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished']
 
@@ -23,33 +22,7 @@ interface Props {
 
 export const EntryPage: FC<Props> = ({ entry }) => {
 
-    const router = useRouter()
-    const { updateEntry } = useContext( EntriesContext )
-
-    const [inputValue, setInputValue] = useState( entry.description )
-    const [status, setStatus] = useState<EntryStatus>( entry.status );
-    const [touched, setTouched] = useState(false);
-
-    const isNotValid = useMemo(() => inputValue.length <= 0 && touched, [inputValue, touched])
-
-    
-    const onInputValueChange = (e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)
-
-    const onStatusChange = (e: ChangeEvent<HTMLInputElement>) => setStatus( e.target.value as EntryStatus );
-
-    const onSave = () => {
-        if ( inputValue.trim().length === 0 ) return;
-
-        const updatedEntry: Entry = {
-            ...entry,
-            status,
-            description: inputValue,
-        }
-
-        updateEntry( updatedEntry, true );
-        router.push('/')
-    }
-
+    const { inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status } = useEntries({ entry })
 
   return (
     

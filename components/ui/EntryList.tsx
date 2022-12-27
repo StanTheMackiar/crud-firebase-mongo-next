@@ -56,7 +56,7 @@ export const EntryList:FC<Props> = ({ status }) => {
             <List sx={{ opacity: isDragging ? 0.3 : 1, transition: 'all .3s' }}>
                {
                 entriesByStatus.map( entry => (
-                    <EntryCard key={ entry._id } entry={entry}/>
+                    <EntryCard key={ entry._id } entry={ entry } status={ status } />
                 ))
                }
             </List>
