@@ -4,8 +4,10 @@ import { entriesApi } from '../../api';
 import { Entry } from '../../interfaces';
 
 import { EntriesContext,  entriesReducer } from './';
-import axios from 'axios';
 import { uploadImageApi } from '../../api/upload';
+import { ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../../firebase/firebase';
+import { toBase64 } from '../../utils';
 
 export interface EntriesState {
     entries: Entry[],
@@ -24,13 +26,10 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
    const uploadImage = async( image: File ) => {
 
-          // const file = new FormData()
-          // file.append('image', image)
-
           try { 
-               console.log('uploadImageFront')
-               await uploadImageApi.post('images/upload', image)
-
+               const base64Image = await toBase64( image )
+               await entriesApi.post('images/upload', { image: base64Image })
+  
                enqueueSnackbar('Image successfully uploaded', {
                     variant: 'success',
                     autoHideDuration: 1500,

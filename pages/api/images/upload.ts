@@ -1,4 +1,4 @@
-import { ref, uploadBytes } from 'firebase/storage'
+import { ref, uploadString } from 'firebase/storage'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { storage } from '../../../firebase/firebase'
 
@@ -22,15 +22,11 @@ export default function handler(req:NextApiRequest, res: NextApiResponse<Data>) 
 
 const uploadImage = async(req: NextApiRequest, res: NextApiResponse<Data>) => {
 
-    
-    console.log({body: req.body})
-
-    const { image } = req.body;
-
-    const imagesRef = ref(storage, 'images')
+    const { image } = req.body as { image: string };
+    const storageRef = ref(storage, 'Images/' + Date.now())
 
     try {
-        const uploadTask = await uploadBytes(imagesRef, image)
+        const uploadTask = await uploadString(storageRef, image, 'data_url')
         console.log({uploadTask})
 
         return res.status(200).send({
