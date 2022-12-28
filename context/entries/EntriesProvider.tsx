@@ -4,16 +4,16 @@ import { entriesApi } from '../../api';
 import { Entry } from '../../interfaces';
 
 import { EntriesContext,  entriesReducer } from './';
+import axios from 'axios';
+import { uploadImageApi } from '../../api/upload';
 
 export interface EntriesState {
     entries: Entry[],
 }
 
-
 const Entries_INITIAL_STATE: EntriesState = {
     entries: [],
 }
-
 
 export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
@@ -21,6 +21,35 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
    const { enqueueSnackbar } = useSnackbar()
    const [loader, setLoader] = useState(false);
    const [error, setError] = useState(false)
+
+   const uploadImage = async( image: File ) => {
+
+          // const file = new FormData()
+          // file.append('image', image)
+
+          try { 
+               console.log('uploadImageFront')
+               await uploadImageApi.post('images/upload', image)
+
+               enqueueSnackbar('Image successfully uploaded', {
+                    variant: 'success',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                         vertical: 'top',
+                         horizontal: 'right'
+                    }
+                  })
+          } catch (error) {
+               enqueueSnackbar('Upload image process failed :(', {
+                    variant: 'error',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                         vertical: 'top',
+                         horizontal: 'right'
+                    }
+               })
+          }
+   }
 
    const addNewEntry = async( description: string ) => {
 
@@ -48,10 +77,6 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                     }
                })
         }  
-
-
-       
-
    }
 
    const updateEntry = async( { _id, description, status }: Entry, showSnackbar: boolean = false ) => {
@@ -140,6 +165,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
          addNewEntry,
          deleteEntry,
          updateEntry,
+         uploadImage,
        }}>
           { children }
        </EntriesContext.Provider>

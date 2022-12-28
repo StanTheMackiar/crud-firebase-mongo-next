@@ -1,8 +1,10 @@
+import { UploadResult } from "firebase/storage";
 
 
 
 export interface Entry {
     _id?: string,
+    image?: UploadResult,
     description: string,
     createdAt: number,
     status: EntryStatus,

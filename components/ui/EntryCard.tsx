@@ -1,6 +1,6 @@
 import { FC, DragEvent, useContext, useState } from 'react';
 
-import { Box, Card, CardActionArea, CardActions, CardContent, IconButton, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardActions, CardContent, IconButton, Typography, capitalize } from '@mui/material';
 
 import { Entry, EntryStatus } from '../../interfaces';
 import { UIContext } from '../../context/ui';
@@ -11,7 +11,6 @@ import EditIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EntriesContext } from '../../context/entries/EntriesContext';
 import { AlertDialog } from '.';
-import { capitalizeFirstWord } from '../../utils/capitalizeFirstLetter';
 
 
 interface Props {
@@ -24,9 +23,7 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
 
     const { toggleDragging } = useContext(UIContext)
     const { deleteEntry } = useContext(EntriesContext)
-
     const [open, setOpen] = useState(false);
-
     const router = useRouter();
 
     const toggleOpen = () => {
@@ -62,7 +59,7 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
         >  
             <CardActionArea>
                 <CardContent>
-                    <Typography sx={{ whiteSpace: 'pre-line', textDecoration: `${ status === 'finished' ? 'line-through' : 'none'}` }}>{ capitalizeFirstWord(entry.description) }</Typography>
+                    <Typography sx={{ whiteSpace: 'pre-line', textDecoration: `${ status === 'finished' ? 'line-through' : 'none'}` }}>{ capitalize(entry.description) }</Typography>
                 </CardContent>
 
                 <CardActions sx={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 2}}>

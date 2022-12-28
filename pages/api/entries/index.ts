@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { db } from '../../../firebase/firebase';
+import { db, storage } from '../../../firebase/firebase';
 import { collection, getDocs, query, addDoc, QuerySnapshot, CollectionReference } from "firebase/firestore";
 import { Entry } from '../../../interfaces';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 
 type Data = 
     | { message: string }
@@ -56,24 +57,25 @@ const getEntries = async( req: NextApiRequest , res: NextApiResponse<Data>) => {
 }
 
 const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
-    const { description } = req.body;
+
+    const { description } = req.body as { description: string, image: File };
 
     const entry: Entry = {
         description,
         createdAt: Date.now(),
         status: 'pending',
     }
-
     
     const entryRef = collection(db, 'Entries') as CollectionReference<Entry>;
+    
     const entryAdded = await addDoc(entryRef, entry)
 
-    //! Agregar entry con id personalizado
+    //? Agregar entry con id personalizado
     // await setDoc(doc(entryRef, 'ID1'), entry)
 
     return res.status(200).send({
         ...entry,
-        _id: entryAdded.id
+        _id: entryAdded.id,
     })
 
 }
