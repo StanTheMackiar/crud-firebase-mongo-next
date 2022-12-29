@@ -1,19 +1,18 @@
+import { useAlert } from './useAlert';
 import { useState, useContext, ChangeEvent } from "react";
 import { EntriesContext } from "../context/entries";
 import { UIContext } from "../context/ui";
 
 export const useNewEntry = () => {
     
+    const { isOpenAlert, toggleAlert } = useAlert();
     const [ inputValue, setInputValue ] = useState('')
     const [ touched, setTouched ] = useState(false)
     const [ imageFile, setImageFile ] = useState<File | null>(null);
     const { addNewEntry, uploadImage } = useContext(EntriesContext)
     const { setIsAddingEntry, isAddingEntry } = useContext(UIContext)
-    const [ openAlert, setOpenAlert ] = useState(false);
     const [ isLoading, setIsLoading] = useState(false);
   
-  
-    const toggleOpen = () => setOpenAlert(prev => !prev);
         
     const onTextFieldChange = (e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)
   
@@ -21,7 +20,7 @@ export const useNewEntry = () => {
       const file = e.target.files?.[0];
   
       if( !file?.type.startsWith('image') ) {
-        setOpenAlert(true);
+        toggleAlert();
         return;
       }
       console.log({file})
@@ -47,7 +46,7 @@ export const useNewEntry = () => {
 
       try {
         console.log('Image file detected')
-        const imageUrl = await uploadImage(imageFile);
+        const imageUrl = await uploadImage( imageFile );
         await addNewEntry(inputValue, imageUrl)
         finishAddingEntry();
 
@@ -74,17 +73,17 @@ export const useNewEntry = () => {
         inputValue,
         isAddingEntry,
         isLoading,
-        openAlert,
+        isOpenAlert,
         touched,
 
         // Methods
-        formatImageName,
         finishAddingEntry,
+        formatImageName,
         onSave,
         onSelectImage,
         onTextFieldChange,
         setIsAddingEntry,
+        toggleAlert,
         setTouched,
-        toggleOpen,
     }
 }

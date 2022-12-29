@@ -8,10 +8,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 interface Props {
   toggleOpen: () => void,
   open: boolean,
-  onDeleteEntry: () => void,
+  onDelete: () => void,
+  message: string,
 }
 
-export const AlertDialog = ({ toggleOpen, open, onDeleteEntry }: Props) => {
+export const AlertRemove = ({ toggleOpen, open, onDelete, message }: Props) => {
 
   return (
     <div>
@@ -27,7 +28,7 @@ export const AlertDialog = ({ toggleOpen, open, onDeleteEntry }: Props) => {
           </Grid>
           <Grid item xs={12} textAlign='center'>
             <DialogTitle>
-              Do you want remove this entry?
+              { message }
             </DialogTitle>
           </Grid>
         </Grid>
@@ -37,10 +38,10 @@ export const AlertDialog = ({ toggleOpen, open, onDeleteEntry }: Props) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{p:2}}>
-          <Button onClick={toggleOpen} autoFocus>
+          <Button onClick={ toggleOpen } autoFocus>
             Cancel
           </Button>
-          <Button color="error" onClick={() => onDeleteEntry()} endIcon={<DeleteIcon />}>
+          <Button color="error" onClick={ onDelete } endIcon={ <DeleteIcon /> }>
             Remove
           </Button>
         </DialogActions>

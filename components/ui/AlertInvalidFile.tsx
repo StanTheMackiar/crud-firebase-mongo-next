@@ -1,5 +1,5 @@
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogTitle, Grid } from '@mui/material';
 
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -15,7 +15,7 @@ export const AlertInvalidFile = ({ toggleOpen, open }: Props) => {
     <div>
       <Dialog
         open={open}
-        onClose={toggleOpen}
+        onClose={ toggleOpen }
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >

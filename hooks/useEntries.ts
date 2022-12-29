@@ -1,8 +1,9 @@
-import axios from "axios"
+
 import { useRouter } from "next/router"
 import { useContext, useState, useMemo, ChangeEvent } from "react"
 import { EntriesContext } from "../context/entries"
 import { Entry, EntryStatus } from "../interfaces"
+import { useAlert } from "./useAlert"
 
 interface Params {
     entry: Entry
@@ -10,14 +11,22 @@ interface Params {
 
 export const useEntries = ({ entry }: Params ) => {
 
+    const invalidFileAlert = useAlert();
+    const deleteEntryAlert = useAlert();
+    const deleteImageAlert = useAlert();
+
     const router = useRouter()
     const [ imageFile, setImageFile ] = useState<File | null>(null)
-    const [ openAlert, setOpenAlert ] = useState(false); 
-    const { updateEntry, uploadImage, deleteImage } = useContext( EntriesContext )
+    const { updateEntry, uploadImage, deleteImage, deleteEntry } = useContext( EntriesContext )
     const [ isLoading, setIsLoading ] = useState(false);
     const [ inputValue, setInputValue ] = useState( entry.description )
     const [ status, setStatus ] = useState<EntryStatus>( entry.status );
     const [ touched, setTouched ] = useState(false);
+
+      
+    const onDeleteImage = () => {
+        deleteImage( entry._id )
+    }
 
     const isNotValid = useMemo(() => inputValue.length <= 0 && touched, [inputValue, touched])
 
@@ -25,7 +34,7 @@ export const useEntries = ({ entry }: Params ) => {
         const file = e.target.files?.[0];
     
         if( !file?.type.startsWith('image') ) {
-          setOpenAlert(true);
+          invalidFileAlert.toggleAlert();
           return;
         }
         console.log({file})
@@ -72,19 +81,32 @@ export const useEntries = ({ entry }: Params ) => {
         }
     }
 
+    const onDeleteEntry = async() => {
+        try {
+            await deleteEntry( entry );
+            router.push("/");
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
 
    return {
+        deleteEntryAlert,
+        deleteImageAlert,
         imageFile,
         inputValue,
+        invalidFileAlert,
         isLoading,
         isNotValid,
-        openAlert,
         status,
 
+        onDeleteEntry,
+        onDeleteImage,
         onInputValueChange,
         onSave,
-        onStatusChange,
         onSelectImage,
+        onStatusChange,
         setTouched,
     }
 }

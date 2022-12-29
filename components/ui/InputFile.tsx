@@ -8,9 +8,10 @@ import { useNewEntry } from '../../hooks/useNewEntry';
 interface Props {
     onSelectImage: ( ...args: any ) => any
     imageFile: File | null;
+    message: string,
 }
 
-export const InputFile: FC<Props> = ({ onSelectImage, imageFile }) => {
+export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message }) => {
 
     const { formatImageName, isLoading } = useNewEntry();
 
@@ -35,7 +36,7 @@ export const InputFile: FC<Props> = ({ onSelectImage, imageFile }) => {
         <Fab component="span" size="small" color="primary" aria-label="add-photo">
             <AddPhoto />
         </Fab>
-        <Typography variant="caption">{ !imageFile ? "Upload image* (max size: 1mb)" : formatImageName(imageFile.name) }</Typography>
+        <Typography variant="caption">{ !imageFile ? message : formatImageName(imageFile.name) }</Typography>
         </Box>
     </label>
    )

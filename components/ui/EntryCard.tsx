@@ -10,7 +10,7 @@ import { dateFunctions } from '../../utils/';
 import EditIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EntriesContext } from '../../context/entries/EntriesContext';
-import { AlertDialog } from '.';
+import { AlertRemove } from '.';
 
 
 interface Props {
@@ -94,10 +94,11 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
 
         </Card>
 
-        <AlertDialog 
+        <AlertRemove 
+            message='Do you want remove this entry?'
             open={open} 
             toggleOpen={toggleOpen} 
-            onDeleteEntry={onDeleteEntry}
+            onDelete={onDeleteEntry}
         />
     </>
   )
