@@ -9,16 +9,17 @@ interface Props {
     onSelectImage: ( ...args: any ) => any
     imageFile: File | null;
     message: string,
+    isLoading: boolean,
 }
 
-export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message }) => {
+export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoading }) => {
 
-    const { formatImageName, isLoading } = useNewEntry();
+    const { formatImageName } = useNewEntry();
 
    return (
     <label htmlFor="upload-image">
         <Box 
-        display="flex" 
+        display={ !isLoading ? "flex" : "none" } 
         flexDirection='row' 
         alignItems='center'
         justifyContent="center"

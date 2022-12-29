@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 import { Entry } from '../../interfaces';
-import { UploadImageData } from '../../pages/api/storage/image';
+import { DeleteImageData } from '../../pages/api/storage/image/[name]';
 
 
 interface ContextProps {
@@ -10,7 +10,7 @@ interface ContextProps {
 
     addNewEntry: (description: string, imageUrl?: string) => Promise<Entry | undefined>
     deleteEntry: (entry: Entry) => Promise<void>;
-    deleteImage: (name: string) => Promise<UploadImageData | undefined>
+    deleteImage: (name: string) => Promise<DeleteImageData | undefined>
     updateEntry: (entry: Entry, showSnackbar?: boolean) => Promise<void>,
     uploadImage: (image: File, userId: String) => Promise<string>,
 }

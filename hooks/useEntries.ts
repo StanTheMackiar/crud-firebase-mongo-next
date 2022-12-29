@@ -1,6 +1,7 @@
+import { entriesReducer } from './../context/entries/entriesReducer';
 
 import { useRouter } from "next/router"
-import { useContext, useState, useMemo, ChangeEvent } from "react"
+import { useContext, useState, useMemo, ChangeEvent, useReducer } from "react"
 import { EntriesContext } from "../context/entries"
 import { Entry, EntryStatus } from "../interfaces"
 import { useAlert } from "./useAlert"
@@ -24,8 +25,10 @@ export const useEntries = ({ entry }: Params ) => {
     const [ touched, setTouched ] = useState(false);
 
       
-    const onDeleteImage = () => {
-        deleteImage( entry._id )
+    const onDeleteImage = async() => {
+        await deleteImage( entry._id );
+        deleteImageAlert.toggleAlert();
+        
     }
 
     const isNotValid = useMemo(() => inputValue.length <= 0 && touched, [inputValue, touched])

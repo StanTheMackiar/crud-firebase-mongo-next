@@ -8,6 +8,7 @@ import { toBase64 } from '../../utils';
 import { UploadImageData } from '../../pages/api/storage/image';
 import axios from 'axios';
 import { controller } from '../../api/entriesApi';
+import { DeleteImageData } from '../../pages/api/storage/image/[name]';
 
 export interface EntriesState {
     entries: Entry[],
@@ -153,6 +154,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
    }
 
    const deleteEntry = async({ _id }: Entry) => {
+
           try {
                const { data } = await entriesApi.delete<Entry>(`/entries/${ _id }`);
                dispatch({ type: 'Entry - Delete-Entry', payload: data })
@@ -180,9 +182,21 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
           }
    }
 
-   const deleteImage = async( name: string ) => {
+   const deleteImage = async( id: string ) => {
+
+     const newState = state.entries.map(entry => {
+          if (entry._id === id) {
+               return {
+                    ...entry,
+                    image: "",
+               }
+          }
+     }) as Entry[]
+
      try {
-          const { data } = await entriesApi.delete<UploadImageData>(`/storage/image/${name}`)
+          const { data } = await entriesApi.delete<DeleteImageData>(`/storage/image/${id}`)
+
+          // dispatch({type: 'Entry - Delete-Image', payload: newState });
 
           enqueueSnackbar('Image deleted successfully', {
                variant: 'success',

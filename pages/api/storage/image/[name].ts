@@ -2,7 +2,7 @@ import { deleteObject, ref } from 'firebase/storage'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { storage } from '../../../../firebase/firebase'
 
-export type DeleteImageData = { message: string }
+export type DeleteImageData = { message: string, id: string }
 
 
 export default function handler(req:NextApiRequest, res: NextApiResponse) {
@@ -30,12 +30,13 @@ const deleteImage = async(req: NextApiRequest, res: NextApiResponse<DeleteImageD
    
         return res.status(200).send({
             message: "Deleted successfully",
+            id: name,
         })
 
     } catch (err) {
         console.log(err);
         console.log('Operation failed');
-        return res.status(500).send({ message: "Internal server error" });
+        return res.status(500).send({ message: "Internal server error", id: "" });
     }
 
 }
