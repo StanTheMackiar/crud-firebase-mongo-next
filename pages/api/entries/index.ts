@@ -3,6 +3,7 @@ import { db, storage } from '../../../firebase/firebase';
 import { collection, getDocs, query, addDoc, QuerySnapshot, CollectionReference } from "firebase/firestore";
 import { Entry } from '../../../interfaces';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { capitalize } from '@mui/material';
 
 type Data = 
     | { message: string }
@@ -61,7 +62,7 @@ const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
     const { description = '', imageUrl = '' } = req.body as { description: string, imageUrl: string };
 
     const entry: Entry = {
-        description,
+        description: capitalize(description),
         createdAt: Date.now(),
         status: 'pending',
         image: imageUrl,

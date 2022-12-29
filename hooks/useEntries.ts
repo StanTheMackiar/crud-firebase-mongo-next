@@ -83,6 +83,7 @@ export const useEntries = ({ entry }: Params ) => {
 
     const onDeleteEntry = async() => {
         try {
+            if (entry.image) await deleteImage( entry._id )
             await deleteEntry( entry );
             router.push("/");
         } catch (err) {

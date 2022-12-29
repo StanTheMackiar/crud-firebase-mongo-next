@@ -9,7 +9,7 @@ export const useNewEntry = () => {
     const [ inputValue, setInputValue ] = useState('')
     const [ touched, setTouched ] = useState(false)
     const [ imageFile, setImageFile ] = useState<File | null>(null);
-    const { addNewEntry, uploadImage } = useContext(EntriesContext)
+    const { addNewEntry, uploadImage, updateEntry } = useContext(EntriesContext)
     const { setIsAddingEntry, isAddingEntry } = useContext(UIContext)
     const [ isLoading, setIsLoading] = useState(false);
   
@@ -38,16 +38,23 @@ export const useNewEntry = () => {
       if (inputValue.length === 0) return;
       setIsLoading(true);
 
-      if( !imageFile ) {
-        await addNewEntry(inputValue);
+      const newEntry = await addNewEntry( inputValue );
+
+      if ( !imageFile || !newEntry ) {
         finishAddingEntry();
         return;
       }
 
       try {
         console.log('Image file detected')
-        const imageUrl = await uploadImage( imageFile );
-        await addNewEntry(inputValue, imageUrl)
+        const { _id } = newEntry;
+        const image = await uploadImage( imageFile, _id );
+        const finalEntry = {
+          ...newEntry,
+          image,
+        }
+
+        await updateEntry( finalEntry, false )
         finishAddingEntry();
 
       } catch (err) {

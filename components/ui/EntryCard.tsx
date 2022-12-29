@@ -22,7 +22,7 @@ interface Props {
 export const EntryCard:FC<Props> = ({ entry, status }) => {
 
     const { toggleDragging } = useContext(UIContext)
-    const { deleteEntry } = useContext(EntriesContext)
+    const { deleteEntry, deleteImage } = useContext(EntriesContext)
     const [open, setOpen] = useState(false);
     const router = useRouter();
 
@@ -43,8 +43,9 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
         router.push(`/entries/${ entry._id }`)
     }
 
-    const onDeleteEntry = () => {
-        deleteEntry(entry)
+    const onDeleteEntry = async() => {
+        if(entry.image) await deleteImage(entry._id)
+        await deleteEntry(entry)
         toggleOpen();
     }
 
