@@ -79,12 +79,14 @@ const updateEntry = async( req: NextApiRequest, res: NextApiResponse<Data> ) => 
     const {
         description = entryToUpdate.description, 
         status = entryToUpdate.status,
+        image = entryToUpdate.image,
     } = req.body as Entry;
 
     try {
         await updateDoc(entryRef, {
             description,
-            status
+            status,
+            image,
         })
 
         const entryUpdated = await getDoc<Entry>(entryRef)

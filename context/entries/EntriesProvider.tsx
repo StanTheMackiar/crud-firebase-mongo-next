@@ -4,10 +4,10 @@ import { entriesApi } from '../../api';
 import { Entry } from '../../interfaces';
 
 import { EntriesContext,  entriesReducer } from './';
-import { uploadImageApi } from '../../api/upload';
-import { ref, uploadBytes } from 'firebase/storage';
-import { storage } from '../../firebase/firebase';
 import { toBase64 } from '../../utils';
+import { UploadImageData } from '../../pages/api/images/upload';
+import axios from 'axios';
+import { controller } from '../../api/entriesApi';
 
 export interface EntriesState {
     entries: Entry[],
@@ -28,8 +28,12 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
           try { 
                const base64Image = await toBase64( image )
-               await entriesApi.post('images/upload', { image: base64Image })
-  
+               console.log({base64Image})
+
+               const abortTimeOut = setTimeout(() => controller.abort(), 20000)
+               const { data } = await entriesApi.post<UploadImageData>('images/upload', { image: base64Image } )
+               clearTimeout(abortTimeOut)
+         
                enqueueSnackbar('Image successfully uploaded', {
                     variant: 'success',
                     autoHideDuration: 1500,
@@ -38,8 +42,40 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                          horizontal: 'right'
                     }
                   })
-          } catch (error) {
-               enqueueSnackbar('Upload image process failed :(', {
+
+               return data.url!
+
+          } catch (err: any) {
+               if(err.name === 'CanceledError') {
+                    enqueueSnackbar('Time out exceeded', {
+                         variant: 'error',
+                         autoHideDuration: 1500,
+                         anchorOrigin: {
+                              vertical: 'top',
+                              horizontal: 'right'
+                         }
+                    })
+
+                    throw new Error('Time out exceeded')
+               }
+
+
+               if(axios.isAxiosError(err)){
+                    if ( err.response?.data === "Body exceeded 1mb limit" ) {
+                         enqueueSnackbar('File exceeded 1mb limit', {
+                              variant: 'error',
+                              autoHideDuration: 1500,
+                              anchorOrigin: {
+                                   vertical: 'top',
+                                   horizontal: 'right'
+                              }
+                         })
+
+                         throw new Error( err.response.data )
+                    } 
+               }
+
+               enqueueSnackbar('Error uploading image', {
                     variant: 'error',
                     autoHideDuration: 1500,
                     anchorOrigin: {
@@ -47,13 +83,13 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                          horizontal: 'right'
                     }
                })
+               throw new Error('Internal server error')
           }
    }
 
-   const addNewEntry = async( description: string ) => {
-
+   const addNewEntry = async( description: string, imageUrl?: string ) => {
         try {
-             const { data } = await entriesApi.post<Entry>('/entries', { description })
+             const { data } = await entriesApi.post<Entry>('/entries', { description, imageUrl })
 
              dispatch({ type: 'Entry - Add', payload: data })
 
@@ -65,6 +101,9 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                     horizontal: 'right'
                }
              })
+
+             return data
+
         } catch (error) {
                console.log(error)
                enqueueSnackbar('Server error', {
@@ -75,13 +114,17 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                          horizontal: 'right'
                     }
                })
+               throw new Error('Server error')
         }  
    }
 
-   const updateEntry = async( { _id, description, status }: Entry, showSnackbar: boolean = false ) => {
+   const updateEntry = async( { _id, description, status, image }: Entry, showSnackbar: boolean = false ) => {
+
         try {
-          
-             const { data } = await entriesApi.put<Entry>(`/entries/${ _id }`, { description, status });
+             const { data } = await entriesApi.put<Entry>(`/entries/${ _id }`, { description, status, image });
+             
+             console.log({updateEntry: data});
+
              dispatch({type: 'Entry - Update-Entry', payload: data });
 
              if ( showSnackbar ) {
@@ -94,7 +137,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                     }
                   })
              }
-          
+
         } catch (error) {
             console.log({ error })
             enqueueSnackbar('Server error', {

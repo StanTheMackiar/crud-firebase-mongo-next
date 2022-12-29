@@ -4,16 +4,14 @@ import { Box, Button, TextField } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import CircularProgress from '@mui/material/CircularProgress';
-import AddPhoto from '@mui/icons-material/AddPhotoAlternate';
-import { Fab } from "@mui/material";
-import { Typography } from "@mui/material";
 import { AlertInvalidFile } from ".";
 
 import { useNewEntry } from "../../hooks/useNewEntry";
+import { InputFile } from './';
 
 export const NewEntry = () => {
 
-  const { formatImageName, onCancel, onSave, onSelectImage, onTextFieldChange, toggleOpen, openAlert, isAddingEntry, inputValue, setIsAddingEntry, touched, setTouched, imageFile, isLoading } = useNewEntry();
+  const { finishAddingEntry, onSave, onTextFieldChange, toggleOpen, openAlert, isAddingEntry, inputValue, setIsAddingEntry, touched, setTouched, isLoading, onSelectImage, imageFile } = useNewEntry();
 
   return (
     <>
@@ -42,28 +40,7 @@ export const NewEntry = () => {
               onBlur={ () => setTouched( true )}
             />
 
-                <label htmlFor="upload-image">
-                  <Box 
-                    display="flex" 
-                    flexDirection='row' 
-                    alignItems='center'
-                    justifyContent="center"
-                    gap={1} 
-                    mb={2}
-                  >
-                    <input
-                      id="upload-image"
-                      type="file"
-                      accept="image/png, .jpeg, .jpg, image/gif"
-                      onChange={ onSelectImage }
-                      style={{display: 'none'}}
-                    />
-                    <Fab component="span" size="small" color="primary" aria-label="add-photo">
-                      <AddPhoto />
-                    </Fab>
-                    <Typography variant="caption">{ !imageFile ? "Upload image* (max size: 1mb)" : formatImageName(imageFile.name) }</Typography>
-                  </Box>
-                </label>
+            <InputFile onSelectImage={ onSelectImage } imageFile={ imageFile }/>
 
             <Box display="flex" justifyContent="space-between" gap={1}>
               <Button
@@ -77,7 +54,7 @@ export const NewEntry = () => {
               >
                 Save
               </Button>
-              <Button variant="outlined" color="secondary" size="small" onClick={ onCancel }>
+              <Button variant="outlined" color="secondary" size="small" onClick={ finishAddingEntry }>
                 Cancel
               </Button>
             </Box>

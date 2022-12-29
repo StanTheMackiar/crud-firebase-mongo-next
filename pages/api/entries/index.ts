@@ -35,20 +35,20 @@ const getEntries = async( req: NextApiRequest , res: NextApiResponse<Data>) => {
     }), 5000)
     
     try {
-    const querySnapshot = await getDocs(query(collection(db, 'Entries'))) as QuerySnapshot<Entry>;
+        const querySnapshot = await getDocs(query(collection(db, 'Entries'))) as QuerySnapshot<Entry>;
 
-    clearTimeout(abort)
-    
-    const entries: Entry[] = [];
+        clearTimeout(abort)
+        
+        const entries: Entry[] = [];
 
-    querySnapshot.forEach( doc => 
-        entries.push({
-            ...doc.data(),
-            _id: doc.id,
-        })
-      );
+        querySnapshot.forEach( doc => 
+            entries.push({
+                ...doc.data(),
+                _id: doc.id,
+            })
+        );
 
-    return res.status(200).json(entries)
+        return res.status(200).json(entries)
 
     } catch (err) {
         console.log(err)
@@ -58,24 +58,29 @@ const getEntries = async( req: NextApiRequest , res: NextApiResponse<Data>) => {
 
 const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
 
-    const { description } = req.body as { description: string, image: File };
+    const { description = '', imageUrl = '' } = req.body as { description: string, imageUrl: string };
 
     const entry: Entry = {
         description,
         createdAt: Date.now(),
         status: 'pending',
+        image: imageUrl,
     }
     
     const entryRef = collection(db, 'Entries') as CollectionReference<Entry>;
     
-    const entryAdded = await addDoc(entryRef, entry)
+    try {
+        const entryAdded = await addDoc(entryRef, entry)
+        return res.status(200).send({
+            ...entry,
+            _id: entryAdded.id,
+        })
+    
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send({message: 'Firebase server error, check logs' });
+    }
+  
 
-    //? Agregar entry con id personalizado
-    // await setDoc(doc(entryRef, 'ID1'), entry)
-
-    return res.status(200).send({
-        ...entry,
-        _id: entryAdded.id,
-    })
 
 }

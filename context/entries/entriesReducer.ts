@@ -24,6 +24,7 @@ export const entriesReducer = ( state: EntriesState, action: EntriesActionType):
                     if (entry._id === action.payload._id) {
                         entry.status = action.payload.status;
                         entry.description = action.payload.description;
+                        entry.image = action.payload.image;
                     }
                     return entry;
                })

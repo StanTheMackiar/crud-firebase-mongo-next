@@ -1,6 +1,6 @@
 import { FC, DragEvent, useContext, useState } from 'react';
 
-import { Box, Card, CardActionArea, CardActions, CardContent, IconButton, Typography, capitalize } from '@mui/material';
+import { Box, Card, CardMedia, CardActionArea, CardActions, CardContent, IconButton, Typography, capitalize } from '@mui/material';
 
 import { Entry, EntryStatus } from '../../interfaces';
 import { UIContext } from '../../context/ui';
@@ -58,6 +58,17 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
             onDragEnd={ onDragEnd }
         >  
             <CardActionArea>
+                {
+                    entry.image && 
+                        <CardMedia 
+                            component='img'
+                            image={ entry.image }
+                            width={200}
+                            height={200}
+                            sx={{ objectFit: 'contain' }}
+                            alt={ 'Image for entry ID' + entry._id }
+                        />
+                }
                 <CardContent>
                     <Typography sx={{ whiteSpace: 'pre-line', textDecoration: `${ status === 'finished' ? 'line-through' : 'none'}` }}>{ capitalize(entry.description) }</Typography>
                 </CardContent>

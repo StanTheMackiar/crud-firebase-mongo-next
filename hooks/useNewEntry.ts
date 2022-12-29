@@ -37,20 +37,34 @@ export const useNewEntry = () => {
   
     const onSave = async() => {
       if (inputValue.length === 0) return;
-
       setIsLoading(true);
-      await addNewEntry(inputValue);
 
-      if( imageFile ) await uploadImage(imageFile)
+      if( !imageFile ) {
+        await addNewEntry(inputValue);
+        finishAddingEntry();
+        return;
+      }
 
+      try {
+        console.log('Image file detected')
+        const imageUrl = await uploadImage(imageFile);
+        await addNewEntry(inputValue, imageUrl)
+        finishAddingEntry();
+
+      } catch (err) {
+        console.log({err})
+        finishAddingEntry();
+      }
+
+      finishAddingEntry();
+    }
+
+  
+    const finishAddingEntry = () => {
       setIsLoading(false);
       setIsAddingEntry( false );
       setTouched( false );
       setInputValue('');
-    }
-  
-    const onCancel = () => {
-      setIsAddingEntry( false );
       setImageFile(null);
     } 
   
@@ -65,7 +79,7 @@ export const useNewEntry = () => {
 
         // Methods
         formatImageName,
-        onCancel,
+        finishAddingEntry,
         onSave,
         onSelectImage,
         onTextFieldChange,

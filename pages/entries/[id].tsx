@@ -1,5 +1,4 @@
-import { FC } from 'react';
-import { GetServerSideProps } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 
 import { capitalize, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton } from '@mui/material'
 
@@ -12,6 +11,7 @@ import { dateFunctions } from '../../utils';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { useEntries } from '../../hooks/useEntries';
+import { InputFile } from '../../components/ui';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished']
 
@@ -20,9 +20,9 @@ interface Props {
 }
 
 
-export const EntryPage: FC<Props> = ({ entry }) => {
+export const EntryPage: NextPage<Props> = ({ entry }) => {
 
-    const { inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status } = useEntries({ entry })
+    const { inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, imageFile } = useEntries({ entry })
 
   return (
     
@@ -42,16 +42,20 @@ export const EntryPage: FC<Props> = ({ entry }) => {
                         <TextField 
                             sx={{ marginTop: 2, marginBottom: 1}}
                             fullWidth
-                            placeholder='New Entry'
+                            placeholder='Newdeescription'
                             autoFocus
                             multiline
-                            label='New Entry'
+                            label='New description'
                             value={inputValue}
                             onChange={ onInputValueChange }
                             helperText={ isNotValid && 'Enter a value'}
                             error={ isNotValid }
                             onBlur={ ()=> setTouched( true ) }
                         />
+
+                        {
+                            entry.image && <InputFile onSelectImage={onSelectImage} imageFile={ imageFile }/>
+                        }
 
                         <FormControl>
                             <FormLabel>Status:</FormLabel>
@@ -90,7 +94,9 @@ export const EntryPage: FC<Props> = ({ entry }) => {
             </Grid>
 
         </Grid>
+        
 
+        {/* //TODO: colocar funcion para borrar */}
         <IconButton sx={{
             position: 'fixed',
             bottom: 30,
