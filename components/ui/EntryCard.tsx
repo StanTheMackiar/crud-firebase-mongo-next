@@ -63,8 +63,6 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
                         <CardMedia 
                             component='img'
                             image={ entry.image }
-                            width={200}
-                            height={200}
                             sx={{ objectFit: 'contain' }}
                             alt={ 'Image for entry ID' + entry._id }
                         />

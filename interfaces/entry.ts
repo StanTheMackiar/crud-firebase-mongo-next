@@ -3,7 +3,7 @@ import { UploadResult } from "firebase/storage";
 
 
 export interface Entry {
-    _id?: string,
+    _id: string,
     image?: string,
     description: string,
     createdAt: number,

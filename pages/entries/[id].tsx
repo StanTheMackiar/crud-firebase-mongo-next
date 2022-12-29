@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next'
 
-import { capitalize, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton } from '@mui/material'
+import { capitalize, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton, CircularProgress } from '@mui/material'
 
 import { Layout } from '../../components/layouts'
 import SaveIcon from '@mui/icons-material/Save';
@@ -22,7 +22,7 @@ interface Props {
 
 export const EntryPage: NextPage<Props> = ({ entry }) => {
 
-    const { inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, imageFile } = useEntries({ entry })
+    const { isLoading, inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, imageFile } = useEntries({ entry })
 
   return (
     
@@ -81,11 +81,11 @@ export const EntryPage: NextPage<Props> = ({ entry }) => {
                     </CardContent>
                     <CardActions>
                         <Button
-                            startIcon={<SaveIcon />}
+                            endIcon={!isLoading ? <SaveIcon /> : <CircularProgress size={20} color="inherit" />}
                             variant='contained'
                             fullWidth
                             onClick={ onSave }
-                            disabled={ inputValue.length <= 0 }
+                            disabled={ inputValue.length <= 0 || isLoading }
                         >
                             Save
                         </Button>

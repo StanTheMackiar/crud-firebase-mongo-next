@@ -1,28 +1,24 @@
-import { getDownloadURL, ref, uploadString } from 'firebase/storage'
+import { deleteObject, getDownloadURL, ref, uploadString } from 'firebase/storage'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { storage } from '../../../firebase/firebase'
+import { storage } from '../../../../firebase/firebase'
 
-export type UploadImageData = 
-| { message: string, url: string }
+export type UploadImageData = { message: string, url: string }
 
-export default function handler(req:NextApiRequest, res: NextApiResponse<UploadImageData>) {
 
-   switch ( req.method ) {
+export default function handler(req:NextApiRequest, res: NextApiResponse) {
 
-       case 'POST':
+    if ( req.method === "POST" )
             return uploadImage( req, res )
-
-       default:
-           return res.status(400).json({ message: 'Bad request', url: '' })
-   }
+    
+    return res.status(400).json({ message: 'Bad request', url: '' })
 
 }
 
 
 const uploadImage = async(req: NextApiRequest, res: NextApiResponse<UploadImageData>) => {
 
-    const { image } = req.body as { image: string };
-    const storageRef = ref(storage, 'Images/' + Date.now())
+    const { image, userId } = req.body as { image: string, userId: string };
+    const storageRef = ref(storage, 'Images/' + userId)
 
     try {
         console.log('Uploading...')
@@ -42,3 +38,4 @@ const uploadImage = async(req: NextApiRequest, res: NextApiResponse<UploadImageD
     }
 
 }
+

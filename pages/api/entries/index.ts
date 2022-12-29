@@ -65,6 +65,7 @@ const postEntry = async( req: NextApiRequest, res: NextApiResponse<Data>) => {
         createdAt: Date.now(),
         status: 'pending',
         image: imageUrl,
+        _id: "tempid"
     }
     
     const entryRef = collection(db, 'Entries') as CollectionReference<Entry>;

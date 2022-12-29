@@ -5,7 +5,7 @@ import { Entry } from '../../interfaces';
 
 import { EntriesContext,  entriesReducer } from './';
 import { toBase64 } from '../../utils';
-import { UploadImageData } from '../../pages/api/images/upload';
+import { UploadImageData } from '../../pages/api/storage/image';
 import axios from 'axios';
 import { controller } from '../../api/entriesApi';
 
@@ -24,14 +24,14 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
    const [loader, setLoader] = useState(false);
    const [error, setError] = useState(false)
 
-   const uploadImage = async( image: File ) => {
+   const uploadImage = async( image: File, userId: String ) => {
 
           try { 
                const base64Image = await toBase64( image )
                console.log({base64Image})
 
                const abortTimeOut = setTimeout(() => controller.abort(), 20000)
-               const { data } = await entriesApi.post<UploadImageData>('images/upload', { image: base64Image } )
+               const { data } = await entriesApi.post<UploadImageData>('storage/image', { image: base64Image, userId } )
                clearTimeout(abortTimeOut)
          
                enqueueSnackbar('Image successfully uploaded', {
@@ -62,7 +62,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
                if(axios.isAxiosError(err)){
                     if ( err.response?.data === "Body exceeded 1mb limit" ) {
-                         enqueueSnackbar('File exceeded 1mb limit', {
+                         enqueueSnackbar("Image can't exceeded 1mb limit", {
                               variant: 'error',
                               autoHideDuration: 1500,
                               anchorOrigin: {
@@ -121,6 +121,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
    const updateEntry = async( { _id, description, status, image }: Entry, showSnackbar: boolean = false ) => {
 
         try {
+
              const { data } = await entriesApi.put<Entry>(`/entries/${ _id }`, { description, status, image });
              
              console.log({updateEntry: data});
@@ -179,6 +180,34 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
           }
    }
 
+   const deleteImage = async( name: string ) => {
+     try {
+          const { data } = await entriesApi.delete<UploadImageData>(`/storage/image/${name}`)
+
+          enqueueSnackbar('Image deleted successfully', {
+               variant: 'success',
+               autoHideDuration: 1500,
+               anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right'
+               }
+          })
+
+          return data
+
+     } catch (error) {
+          console.log(error)
+          enqueueSnackbar('Delete image failure', {
+               variant: 'error',
+               autoHideDuration: 1500,
+               anchorOrigin: {
+                    vertical: 'top',
+                    horizontal: 'right'
+               }
+          })
+     }
+   }
+
 
    const refreshEntries = async() => {
      try {
@@ -191,8 +220,6 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
           setLoader(false)
           setError(true)
      }
-        
-
    }
 
    useEffect(() => {
@@ -206,6 +233,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
          loader,
          addNewEntry,
          deleteEntry,
+         deleteImage,
          updateEntry,
          uploadImage,
        }}>
