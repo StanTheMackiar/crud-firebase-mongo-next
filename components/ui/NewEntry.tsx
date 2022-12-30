@@ -11,11 +11,13 @@ import { InputFile } from './';
 
 export const NewEntry = () => {
 
-  const { finishAddingEntry, onSave, onTextFieldChange, isAddingEntry, inputValue, setIsAddingEntry, touched, setTouched, isLoading, onSelectImage, imageFile, isOpenAlert, toggleAlert } = useNewEntry();
+  const { finishAddingEntry, onSave, onTextFieldChange, isAddingEntry, inputValue, setIsAddingEntry, touched, setTouched, isLoading, onSelectImage, imageFile, alertInvalidFile, alertMaxSize } = useNewEntry();
 
   return (
     <>
-      <AlertInvalidFile open={ isOpenAlert } toggleOpen={ toggleAlert } />
+      <AlertInvalidFile open={ alertInvalidFile.isOpenAlert } toggleOpen={ alertInvalidFile.toggleAlert } message='Only image files are allowed!' />
+
+      <AlertInvalidFile open={ alertMaxSize.isOpenAlert } toggleOpen={  alertMaxSize.toggleAlert } message='Only image files are allowed!' />
 
       <Box sx={{ marginBottom: 2, paddingX: 1 }}>
         {!isAddingEntry ? (

@@ -7,9 +7,10 @@ import InfoIcon from '@mui/icons-material/Info';
 interface Props {
   toggleOpen: () => void,
   open: boolean,
+  message: string,
 }
 
-export const AlertInvalidFile = ({ toggleOpen, open }: Props) => {
+export const AlertInvalidFile = ({ toggleOpen, open, message }: Props) => {
 
   return (
     <div>
@@ -25,7 +26,7 @@ export const AlertInvalidFile = ({ toggleOpen, open }: Props) => {
           </Grid>
           <Grid item xs={12} textAlign='center'>
             <DialogTitle>
-            Only image files are allowed!
+              { message }
             </DialogTitle>
           </Grid>
         </Grid>

@@ -11,7 +11,7 @@ interface ContextProps {
     addNewEntry: (description: string, imageUrl?: string) => Promise<Entry | undefined>
     deleteEntry: (entry: Entry) => Promise<void>;
     deleteImage: (id: string) => Promise<Entry | undefined>
-    updateEntry: (entry: Entry, showSnackbar?: boolean) => Promise<void>,
+    updateEntry: (entry: Entry, showSnackbar?: boolean) => Promise<Entry | undefined>,
     uploadImage: (image: File, userId: String) => Promise<string>,
 }
 

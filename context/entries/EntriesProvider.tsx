@@ -1,12 +1,13 @@
-import { useSnackbar } from 'notistack';
 import { FC, PropsWithChildren, useEffect, useReducer, useState } from 'react'
+
+import { useSnackbar } from 'notistack';
+import axios from 'axios';
+
 import { entriesApi } from '../../api';
 import { Entry } from '../../interfaces';
-
 import { EntriesContext,  entriesReducer } from './';
 import { toBase64 } from '../../utils';
 import { UploadImageData } from '../../pages/api/storage/image';
-import axios from 'axios';
 import { controller } from '../../api/entriesApi';
 import { DeleteImageData } from '../../pages/api/storage/image/[name]';
 
@@ -139,6 +140,8 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                   })
              }
 
+             return data
+
         } catch (error) {
             console.log({ error })
             enqueueSnackbar('Server error', {
@@ -219,9 +222,9 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
    }
 
 
-   const refreshEntries = async() => {
+   const refreshEntries = async( showLoader = true ) => {
      try {
-        setLoader(true)
+        if(showLoader) setLoader(true)
         const { data } = await entriesApi.get<Entry[]>('/entries');
         dispatch({ type: "Entry - Refresh-Data", payload: data })
         setLoader(false)
@@ -235,6 +238,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
    useEffect(() => {
         refreshEntries();
    }, []);
+
 
    return (
        <EntriesContext.Provider value={{

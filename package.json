@@ -21,6 +21,7 @@
     "eslint": "8.27.0",
     "eslint-config-next": "13.0.3",
     "firebase": "^9.15.0",
+    "image-compressor": "^2.0.3",
     "next": "13.0.3",
     "notistack": "^2.0.8",
     "react": "18.2.0",

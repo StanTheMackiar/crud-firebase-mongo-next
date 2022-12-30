@@ -2,10 +2,13 @@ import { useAlert } from './useAlert';
 import { useState, useContext, ChangeEvent } from "react";
 import { EntriesContext } from "../context/entries";
 import { UIContext } from "../context/ui";
+import { MAX_FILE_SIZE } from '../utils/const';
 
 export const useNewEntry = () => {
     
-    const { isOpenAlert, toggleAlert } = useAlert();
+    const alertInvalidFile = useAlert();
+    const alertMaxSize = useAlert();
+
     const [ inputValue, setInputValue ] = useState('')
     const [ touched, setTouched ] = useState(false)
     const [ imageFile, setImageFile ] = useState<File | null>(null);
@@ -20,7 +23,12 @@ export const useNewEntry = () => {
       const file = e.target.files?.[0];
   
       if( !file?.type.startsWith('image') ) {
-        toggleAlert();
+        alertInvalidFile.toggleAlert();
+        return;
+      }
+
+      if( file?.size > MAX_FILE_SIZE ) {
+        alertMaxSize.toggleAlert();
         return;
       }
       console.log({file})
@@ -76,11 +84,12 @@ export const useNewEntry = () => {
   
 
    return {
+        alertInvalidFile,
+        alertMaxSize,
         imageFile,
         inputValue,
         isAddingEntry,
         isLoading,
-        isOpenAlert,
         touched,
 
         // Methods
@@ -90,7 +99,6 @@ export const useNewEntry = () => {
         onSelectImage,
         onTextFieldChange,
         setIsAddingEntry,
-        toggleAlert,
         setTouched,
     }
 }

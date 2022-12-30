@@ -14,7 +14,6 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { useEntries } from '../../hooks/useEntries';
 import { AlertInvalidFile, AlertRemove, InputFile } from '../../components/ui';
-import { useRouter } from 'next/router';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished']
 
@@ -25,9 +24,7 @@ interface Props {
 
 export const EntryPage: NextPage<Props> = ({ serverEntry }) => {
 
-    const router = useRouter();
-
-    const { entry, isLoading, inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, onDeleteEntry, imageFile, onDeleteImage, deleteEntryAlert, deleteImageAlert, invalidFileAlert } = useEntries({ serverEntry })
+    const { entry, isLoading, inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, onDeleteEntry, imageFile, onDeleteImage, onCancel, deleteEntryAlert, deleteImageAlert, invalidFileAlert, invalidFileSizeAlert } = useEntries({ serverEntry })
     
     return (
 
@@ -137,7 +134,7 @@ export const EntryPage: NextPage<Props> = ({ serverEntry }) => {
                             <Button
                                 variant='outlined'
                                 fullWidth
-                                onClick={() => router.push('/') }
+                                onClick={ onCancel }
                                 disabled={ inputValue.length <= 0 || isLoading }
                             >
                                 <ClearIcon />
@@ -184,6 +181,13 @@ export const EntryPage: NextPage<Props> = ({ serverEntry }) => {
         <AlertInvalidFile 
             open={ invalidFileAlert.isOpenAlert }
             toggleOpen={ invalidFileAlert.toggleAlert }
+            message="Only image files are allowed!"
+        />
+
+        <AlertInvalidFile 
+            open={ invalidFileSizeAlert.isOpenAlert }
+            toggleOpen={ invalidFileSizeAlert.toggleAlert }
+            message="Image file max size  is 1mb!"
         />
     </>
   );
