@@ -18,7 +18,6 @@ export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoad
     const { formatImageName } = useNewEntry();
 
    return (
-    <label htmlFor="upload-image">
         <Box 
             display={ !isLoading ? "flex" : "none" } 
             flexDirection='row' 
@@ -26,27 +25,28 @@ export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoad
             justifyContent="center"
             gap={1} 
         >
-        <input
-            id="upload-image"
-            type="file"
-            disabled={isLoading}
-            accept="image/png, .jpeg, .jpg, image/gif"
-            onChange={ onSelectImage }
-            style={{display: 'none'}}
-        />
-        <Tooltip title='Max size: 1mb (optional)'>
-            <Button
-                variant='contained'
-                startIcon={<AddPhoto />}
-                disableElevation
-                component="span"
-                size={ size }
-                aria-label="add-photo" 
-            >
-                { !imageFile ? message : formatImageName(imageFile.name) }
-            </Button>
-        </Tooltip>
+            <label htmlFor="upload-image">
+                <input
+                    id="upload-image"
+                    type="file"
+                    disabled={isLoading}
+                    accept="image/png, .jpeg, .jpg, image/gif"
+                    onChange={ onSelectImage }
+                    style={{display: 'none'}}
+                />
+                <Tooltip title='Max size: 1mb (optional)'>
+                    <Button
+                        variant='contained'
+                        startIcon={<AddPhoto />}
+                        disableElevation
+                        component="span"
+                        size={ size }
+                        aria-label="add-photo" 
+                    >
+                        { !imageFile ? message : formatImageName(imageFile.name) }
+                    </Button>
+                </Tooltip>
+            </label>
         </Box>
-    </label>
    )
 }

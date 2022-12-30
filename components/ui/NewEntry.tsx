@@ -22,7 +22,7 @@ export const NewEntry = () => {
       <Box sx={{ marginBottom: 2, paddingX: 1 }}>
         {!isAddingEntry ? (
           <>
-            <Button startIcon={<AddBoxIcon />} fullWidth variant="outlined" onClick={() => setIsAddingEntry( true )}>
+            <Button endIcon={<AddBoxIcon />} fullWidth variant="outlined" onClick={() => setIsAddingEntry( true )}>
               Add new Entry
             </Button>
           </>

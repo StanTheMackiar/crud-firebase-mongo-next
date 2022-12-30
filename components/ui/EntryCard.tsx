@@ -21,7 +21,7 @@ interface Props {
 
 export const EntryCard:FC<Props> = ({ entry, status }) => {
 
-    const { toggleDragging } = useContext(UIContext)
+    const { toggleDragging, setIsAddingEntry } = useContext(UIContext)
     const { deleteEntry, deleteImage } = useContext(EntriesContext)
     const [open, setOpen] = useState(false);
     const router = useRouter();
@@ -40,6 +40,7 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
     }
 
     const onEditEntry = () => {
+        setIsAddingEntry(false)
         router.push(`/entries/${ entry._id }`)
     }
 
@@ -58,7 +59,7 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
             onDragStart={ onDragStart }
             onDragEnd={ onDragEnd }
         >  
-            <CardActionArea>
+            <CardActionArea sx={{ paddingY: 1}}>
                 {
                     entry.image && 
                         <CardMedia 
@@ -69,30 +70,39 @@ export const EntryCard:FC<Props> = ({ entry, status }) => {
                         />
                 }
                 <CardContent>
-                    <Typography sx={{ whiteSpace: 'pre-line', textDecoration: `${ status === 'finished' ? 'line-through' : 'none'}` }}>{ capitalize(entry.description) }</Typography>
+                    <Typography 
+                        sx={{ whiteSpace: 'pre-line', 
+                        textDecoration: `${ status === 'finished' ? 'line-through' : 'none'}` }}
+                    >
+                        { capitalize(entry.description) }
+                    </Typography>
                 </CardContent>
-
-                <CardActions sx={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 2}}>
-                    <Typography variant='body2' color='gray'>{dateFunctions.getFormatDistanceToNow( entry.createdAt )}</Typography>
-                    <Box component='div'>
-                        <IconButton 
-                            aria-label='edit'
-                            size='small' 
-                            onClick={ onEditEntry }
-                        >
-                            <EditIcon />
-                        </IconButton>
-                        <IconButton 
-                            aria-label='delete'
-                            size='small'
-                            onClick={ toggleOpen }
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Box>
-                </CardActions>
             </CardActionArea>
 
+            <CardActions sx={{ display: 'flex', justifyContent: 'space-between', paddingLeft: 2}}>
+                <Typography 
+                    variant='body2' 
+                    color='gray'
+                >
+                    {dateFunctions.getFormatDistanceToNow( entry.createdAt )}
+                </Typography>
+                <Box component='div'>
+                    <IconButton 
+                        aria-label='edit'
+                        size='small' 
+                        onClick={ onEditEntry }
+                    >
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton 
+                        aria-label='delete'
+                        size='small'
+                        onClick={ toggleOpen }
+                        >
+                        <DeleteIcon />
+                    </IconButton>
+                </Box>
+            </CardActions>
         </Card>
 
         <AlertRemove 

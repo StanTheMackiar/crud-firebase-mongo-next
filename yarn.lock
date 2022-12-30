@@ -936,11 +936,6 @@
   resolved "https://registry.npmjs.org/@types/scheduler/-/scheduler-0.16.2.tgz"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
-"@types/uuid@^8.3.4":
-  version "8.3.4"
-  resolved "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.4.tgz"
-  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
-
 "@typescript-eslint/parser@^5.42.0":
   version "5.42.1"
   resolved "https://registry.npmjs.org/@typescript-eslint/parser/-/parser-5.42.1.tgz"
@@ -1916,11 +1911,6 @@ ignore@^5.2.0:
   version "5.2.0"
   resolved "https://registry.npmjs.org/ignore/-/ignore-5.2.0.tgz"
   integrity sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==
-
-image-compressor@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/image-compressor/-/image-compressor-2.0.3.tgz#9866df538fdb33bdedf139631b8680e78f63f356"
-  integrity sha512-/cwVTp+Kx4KejzFtFgpS+TbR/H1eFi1931lptaBPZziQkdDFPKfBqxim9sGPExwF0jiVr7nlXKaG9+02XFo74Q==
 
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
