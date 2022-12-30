@@ -124,8 +124,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
         try {
 
              const { data } = await entriesApi.put<Entry>(`/entries/${ _id }`, { description, status, image });
-             
-             console.log({updateEntry: data});
+          
 
              dispatch({type: 'Entry - Update-Entry', payload: data });
 
@@ -184,22 +183,19 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
    const deleteImage = async( id: string ) => {
 
-     const newState = state.entries.map(entry => {
-          if (entry._id === id) {
-               return {
-                    ...entry,
-                    image: "",
-               }
-          }
-     }) as Entry[]
+     const newState = state.entries.map(entry => entry._id === id ? { ...entry, image: "" } : entry ) 
+     const entryWithoutImage = newState.find(entry => entry._id === id)
+
+     console.log({newState})
+     console.log({entryWithoutImage})
 
      try {
-          const { data } = await entriesApi.delete<DeleteImageData>(`/storage/image/${id}`)
+          await entriesApi.delete<DeleteImageData>(`/storage/image/${id}`)
 
-          // dispatch({type: 'Entry - Delete-Image', payload: newState });
+          dispatch({type: 'Entry - Delete-Image', payload: newState });
 
           enqueueSnackbar('Image deleted successfully', {
-               variant: 'success',
+               variant: 'info',
                autoHideDuration: 1500,
                anchorOrigin: {
                     vertical: 'top',
@@ -207,7 +203,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                }
           })
 
-          return data
+          return entryWithoutImage
 
      } catch (error) {
           console.log(error)

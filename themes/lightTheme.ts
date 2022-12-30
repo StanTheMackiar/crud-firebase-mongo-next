@@ -23,6 +23,6 @@ export const lightTheme = createTheme({
         defaultProps: {
           elevation: 0,
         }
-      }
+      },
     }
   });

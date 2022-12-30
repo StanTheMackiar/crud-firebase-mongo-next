@@ -7,16 +7,17 @@ import { Entry, EntryStatus } from "../interfaces"
 import { useAlert } from "./useAlert"
 
 interface Params {
-    entry: Entry
+    serverEntry: Entry
 }
 
-export const useEntries = ({ entry }: Params ) => {
+export const useEntries = ({ serverEntry }: Params ) => {
 
     const invalidFileAlert = useAlert();
     const deleteEntryAlert = useAlert();
     const deleteImageAlert = useAlert();
 
     const router = useRouter()
+    const [ entry, setEntry ] = useState( serverEntry );
     const [ imageFile, setImageFile ] = useState<File | null>(null)
     const { updateEntry, uploadImage, deleteImage, deleteEntry } = useContext( EntriesContext )
     const [ isLoading, setIsLoading ] = useState(false);
@@ -24,12 +25,6 @@ export const useEntries = ({ entry }: Params ) => {
     const [ status, setStatus ] = useState<EntryStatus>( entry.status );
     const [ touched, setTouched ] = useState(false);
 
-      
-    const onDeleteImage = async() => {
-        await deleteImage( entry._id );
-        deleteImageAlert.toggleAlert();
-        
-    }
 
     const isNotValid = useMemo(() => inputValue.length <= 0 && touched, [inputValue, touched])
 
@@ -94,10 +89,24 @@ export const useEntries = ({ entry }: Params ) => {
         }
     }
 
+    const onDeleteImage = async() => {
+        try {
+            const entryWithoutImage = await deleteImage( serverEntry._id );
+            await updateEntry(entryWithoutImage!, true)
+            setEntry(entryWithoutImage)
+        } catch (err) {
+            console.log(err)
+        } finally {
+            deleteImageAlert.toggleAlert();
+        }
+        
+    }
+
 
    return {
         deleteEntryAlert,
         deleteImageAlert,
+        entry,
         imageFile,
         inputValue,
         invalidFileAlert,

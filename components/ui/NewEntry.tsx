@@ -40,7 +40,9 @@ export const NewEntry = () => {
               onBlur={ () => setTouched( true )}
             />
 
-            <InputFile onSelectImage={ onSelectImage } imageFile={ imageFile } message="Upload image* (max size: 1mb)" isLoading={isLoading} />
+            <Box marginBottom={2}>
+              <InputFile onSelectImage={ onSelectImage } imageFile={ imageFile } message="Add image" isLoading={isLoading} size='small' />
+            </Box>
 
             <Box display="flex" justifyContent="space-between" gap={1}>
               <Button

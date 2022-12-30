@@ -1,6 +1,6 @@
 import { FC } from 'react'
 
-import { Box, Fab } from '@mui/material'
+import { Box, Button, Fab, Tooltip } from '@mui/material'
 import AddPhoto from '@mui/icons-material/AddPhotoAlternate';
 import { Typography } from "@mui/material";
 import { useNewEntry } from '../../hooks/useNewEntry';
@@ -10,21 +10,21 @@ interface Props {
     imageFile: File | null;
     message: string,
     isLoading: boolean,
+    size?: "small" | "medium" | "large",
 }
 
-export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoading }) => {
+export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoading, size = 'medium' }) => {
 
     const { formatImageName } = useNewEntry();
 
    return (
     <label htmlFor="upload-image">
         <Box 
-        display={ !isLoading ? "flex" : "none" } 
-        flexDirection='row' 
-        alignItems='center'
-        justifyContent="center"
-        gap={1} 
-        mb={2}
+            display={ !isLoading ? "flex" : "none" } 
+            flexDirection='row' 
+            alignItems='center'
+            justifyContent="center"
+            gap={1} 
         >
         <input
             id="upload-image"
@@ -34,10 +34,18 @@ export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoad
             onChange={ onSelectImage }
             style={{display: 'none'}}
         />
-        <Fab component="span" size="small" color="primary" aria-label="add-photo">
-            <AddPhoto />
-        </Fab>
-        <Typography variant="caption">{ !imageFile ? message : formatImageName(imageFile.name) }</Typography>
+        <Tooltip title='Max size: 1mb (optional)'>
+            <Button
+                variant='contained'
+                startIcon={<AddPhoto />}
+                disableElevation
+                component="span"
+                size={ size }
+                aria-label="add-photo" 
+            >
+                { !imageFile ? message : formatImageName(imageFile.name) }
+            </Button>
+        </Tooltip>
         </Box>
     </label>
    )

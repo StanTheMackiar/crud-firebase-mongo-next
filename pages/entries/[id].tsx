@@ -1,11 +1,12 @@
 import { GetServerSideProps, NextPage } from 'next'
 
-import { capitalize, Button, Card, CardMedia, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton, CircularProgress, Box, Fab } from '@mui/material'
+import { capitalize, Button, Card, CardMedia, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton, CircularProgress, Box, Tooltip } from '@mui/material'
 
 import { Layout } from '../../components/layouts'
 import SaveIcon from '@mui/icons-material/Save';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import { EntryStatus, Entry } from '../../interfaces';
 import { dateFunctions } from '../../utils';
@@ -13,18 +14,20 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
 import { useEntries } from '../../hooks/useEntries';
 import { AlertInvalidFile, AlertRemove, InputFile } from '../../components/ui';
-import { useNewEntry } from '../../hooks/useNewEntry';
+import { useRouter } from 'next/router';
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished']
 
 interface Props {
-    entry: Entry
+    serverEntry: Entry
 }
 
 
-export const EntryPage: NextPage<Props> = ({ entry }) => {
+export const EntryPage: NextPage<Props> = ({ serverEntry }) => {
 
-    const { isLoading, inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, onDeleteEntry, imageFile, onDeleteImage, deleteEntryAlert, deleteImageAlert, invalidFileAlert } = useEntries({ entry })
+    const router = useRouter();
+
+    const { entry, isLoading, inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, onDeleteEntry, imageFile, onDeleteImage, deleteEntryAlert, deleteImageAlert, invalidFileAlert } = useEntries({ serverEntry })
     
     return (
 
@@ -55,23 +58,34 @@ export const EntryPage: NextPage<Props> = ({ entry }) => {
                                     />
                                 </Box>
                             }
-                            <Box display="flex" justifyContent="space-between" sx={{
-                                flexDirection: { xs: "column", md: "row" }
-                            }}>
+                            <Box 
+                            display="flex" 
+                            justifyContent="space-around" 
+                            flexDirection='row'
+                            marginBottom={1}
+                            >   
                                 <InputFile 
                                     onSelectImage={onSelectImage} 
                                     imageFile={ imageFile }
-                                    message={ `${entry.image ? "Update" : "Upload" } image* (max size: 1mb)` } 
+                                    message={ `${entry.image ? "Update" : "Upload" } image` } 
+                                    isLoading={isLoading}
                                 />
-                                <Fab 
+                                <IconButton 
                                     component="span" 
-                                    size="small" 
                                     color="primary" 
+                                    sx={{
+                                        display: `${isLoading ? 'none': 'flex'}`,
+                                        color: 'white', 
+                                        backgroundColor: 'primary.main',
+                                        ':hover': {
+                                            backgroundColor: 'primary.dark'
+                                          }
+                                    }}
                                     aria-label="delete-photo"
                                     onClick={ deleteImageAlert.toggleAlert }
                                 >
                                     <DeleteIcon />
-                                </Fab>
+                                </IconButton>
                             </Box>
 
                             <TextField 
@@ -112,13 +126,21 @@ export const EntryPage: NextPage<Props> = ({ entry }) => {
                         </CardContent>
                         <CardActions>
                             <Button
-                                endIcon={!isLoading ? <SaveIcon /> : <CircularProgress size={20} color="inherit" />}
                                 variant='contained'
                                 fullWidth
+                                disableElevation
                                 onClick={ onSave }
                                 disabled={ inputValue.length <= 0 || isLoading }
                             >
-                                Save
+                                {!isLoading ? <SaveIcon /> : <CircularProgress size={20} color="inherit" />}
+                            </Button>
+                            <Button
+                                variant='outlined'
+                                fullWidth
+                                onClick={() => router.push('/') }
+                                disabled={ inputValue.length <= 0 || isLoading }
+                            >
+                                <ClearIcon />
                             </Button>
                         </CardActions>
                     </Card>
@@ -126,15 +148,16 @@ export const EntryPage: NextPage<Props> = ({ entry }) => {
 
             </Grid>
             
-
-            {/* //TODO: colocar funcion para borrar */}
             <IconButton 
             sx={{
                 position: 'fixed',
                 bottom: 30,
                 right: 30,
                 color: 'white',
-                backgroundColor: 'error.dark'
+                backgroundColor: 'error.dark',
+                ':hover': {
+                    backgroundColor: '#740d1d'
+                  }
             }}
             onClick={ deleteEntryAlert.toggleAlert }
             >
@@ -186,7 +209,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
     return {
         props: {
-            entry: {
+            serverEntry: {
                 ...entryRef.data(),
                 _id: entryRef.id
             }
