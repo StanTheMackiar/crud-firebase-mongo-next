@@ -3,6 +3,10 @@
 mongo/
 
 .env
+/.firebase
+/.github
+.firebase-debug.log
+.firestore-debug.log
 
 # dependencies
 /node_modules

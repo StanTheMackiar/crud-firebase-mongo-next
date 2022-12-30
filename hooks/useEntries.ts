@@ -15,7 +15,7 @@ export const useEntries = ({ serverEntry }: Params ) => {
     const invalidFileSizeAlert = useAlert();
     const deleteEntryAlert = useAlert();
     const deleteImageAlert = useAlert();
-
+    
     const router = useRouter()
     const [ entry, setEntry ] = useState( serverEntry );
     const [ imageFile, setImageFile ] = useState<File | null>(null)
