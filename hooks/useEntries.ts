@@ -25,7 +25,7 @@ export const useEntries = ({ serverEntry }: Params ) => {
     const [ status, setStatus ] = useState<EntryStatus>( entry.status );
     const [ touched, setTouched ] = useState(false);
 
-    const tempImageUrl = useRef("")
+    const tempImageUrl = useRef<string | null>(null)
 
     const isNotValid = useMemo(() => inputValue.length <= 0 && touched, [inputValue, touched])
 
@@ -89,7 +89,7 @@ export const useEntries = ({ serverEntry }: Params ) => {
             console.log(err)
 
         } finally {
-            URL.revokeObjectURL(tempImageUrl.current)
+            URL.revokeObjectURL(tempImageUrl.current!)
             setIsLoading(false);
         }
     }
@@ -104,7 +104,15 @@ export const useEntries = ({ serverEntry }: Params ) => {
         }
     }
 
+    const deleteTempImage = () => {
+        setEntry({ ...entry, image: "" });
+        setImageFile(null);
+        tempImageUrl.current = null;
+        URL.revokeObjectURL(tempImageUrl.current!)
+    }
+
     const onDeleteImage = async() => {
+
         try {
             const entryWithoutImage = await deleteImage( serverEntry._id );
             if (entryWithoutImage) {
@@ -123,6 +131,7 @@ export const useEntries = ({ serverEntry }: Params ) => {
    return {
         deleteEntryAlert,
         deleteImageAlert,
+        deleteTempImage,
         entry,
         imageFile,
         inputValue,
@@ -131,6 +140,7 @@ export const useEntries = ({ serverEntry }: Params ) => {
         isLoading,
         isNotValid,
         status,
+        tempImageUrl,
 
         onCancel,
         onDeleteEntry,

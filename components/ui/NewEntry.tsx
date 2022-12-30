@@ -17,7 +17,7 @@ export const NewEntry = () => {
     <>
       <AlertInvalidFile open={ alertInvalidFile.isOpenAlert } toggleOpen={ alertInvalidFile.toggleAlert } message='Only image files are allowed!' />
 
-      <AlertInvalidFile open={ alertMaxSize.isOpenAlert } toggleOpen={  alertMaxSize.toggleAlert } message='Only image files are allowed!' />
+      <AlertInvalidFile open={ alertMaxSize.isOpenAlert } toggleOpen={  alertMaxSize.toggleAlert } message='Image file max size  is 1mb!' />
 
       <Box sx={{ marginBottom: 2, paddingX: 1 }}>
         {!isAddingEntry ? (

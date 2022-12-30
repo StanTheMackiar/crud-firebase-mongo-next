@@ -1,9 +1,10 @@
-import { FC } from 'react'
+import { FC, useRef } from 'react'
 
 import { Box, Button, Fab, Tooltip } from '@mui/material'
 import AddPhoto from '@mui/icons-material/AddPhotoAlternate';
 import { Typography } from "@mui/material";
 import { useNewEntry } from '../../hooks/useNewEntry';
+import { useEntries } from '../../hooks/useEntries';
 
 interface Props {
     onSelectImage: ( ...args: any ) => any
@@ -15,7 +16,9 @@ interface Props {
 
 export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoading, size = 'medium' }) => {
 
-    const { formatImageName } = useNewEntry();
+    const fileInput = useRef<HTMLInputElement>(null);
+
+    const { formatImageName } = useNewEntry()
 
    return (
         <Box 
@@ -27,6 +30,7 @@ export const InputFile: FC<Props> = ({ onSelectImage, imageFile, message, isLoad
         >
             <label htmlFor="upload-image">
                 <input
+                    ref={ fileInput }
                     id="upload-image"
                     type="file"
                     disabled={isLoading}

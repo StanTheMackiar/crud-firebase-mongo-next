@@ -28,11 +28,11 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
 
    const uploadImage = async( image: File, userId: String ) => {
 
+     const abortTimeOut = setTimeout(() => controller.abort(), 20000)
+
           try { 
                const base64Image = await toBase64( image )
                console.log({base64Image})
-
-               const abortTimeOut = setTimeout(() => controller.abort(), 20000)
                const { data } = await entriesApi.post<UploadImageData>('storage/image', { image: base64Image, userId } )
                clearTimeout(abortTimeOut)
          
@@ -48,6 +48,7 @@ export const EntriesProvider: FC<PropsWithChildren> = ({ children }) => {
                return data.url!
 
           } catch (err: any) {
+               clearTimeout(abortTimeOut)
                if(err.name === 'CanceledError') {
                     enqueueSnackbar('Time out exceeded', {
                          variant: 'error',

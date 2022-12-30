@@ -24,7 +24,7 @@ interface Props {
 
 export const EntryPage: NextPage<Props> = ({ serverEntry }) => {
 
-    const { entry, isLoading, inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, onDeleteEntry, imageFile, onDeleteImage, onCancel, deleteEntryAlert, deleteImageAlert, invalidFileAlert, invalidFileSizeAlert } = useEntries({ serverEntry })
+    const { entry, isLoading, inputValue, isNotValid, onInputValueChange, onSave, onStatusChange, setTouched, status, onSelectImage, onDeleteEntry, imageFile, onDeleteImage, onCancel, deleteEntryAlert, deleteImageAlert, invalidFileAlert, invalidFileSizeAlert, tempImageUrl, deleteTempImage } = useEntries({ serverEntry })
     
     return (
 
@@ -67,22 +67,25 @@ export const EntryPage: NextPage<Props> = ({ serverEntry }) => {
                                     message={ `${entry.image ? "Update" : "Upload" } image` } 
                                     isLoading={isLoading}
                                 />
-                                <IconButton 
-                                    component="span" 
-                                    color="primary" 
-                                    sx={{
-                                        display: `${isLoading ? 'none': 'flex'}`,
-                                        color: 'white', 
-                                        backgroundColor: 'primary.main',
-                                        ':hover': {
-                                            backgroundColor: 'primary.dark'
-                                          }
-                                    }}
-                                    aria-label="delete-photo"
-                                    onClick={ deleteImageAlert.toggleAlert }
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
+                                {
+                                    entry.image &&
+                                        <IconButton 
+                                            component="span" 
+                                            color="primary" 
+                                            sx={{
+                                                display: `${isLoading ? 'none': 'flex'}`,
+                                                color: 'white', 
+                                                backgroundColor: 'primary.main',
+                                                ':hover': {
+                                                    backgroundColor: 'primary.dark'
+                                                }
+                                            }}
+                                            aria-label="delete-photo"
+                                            onClick={ !tempImageUrl.current ? deleteImageAlert.toggleAlert : deleteTempImage }
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                }
                             </Box>
 
                             <TextField 

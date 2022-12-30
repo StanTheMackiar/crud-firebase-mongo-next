@@ -67,10 +67,9 @@ export const useNewEntry = () => {
 
       } catch (err) {
         console.log({err})
+      } finally {
         finishAddingEntry();
       }
-
-      finishAddingEntry();
     }
 
   
